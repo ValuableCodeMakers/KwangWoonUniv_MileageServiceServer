@@ -1,0 +1,25 @@
+{
+  "name": "KwangWoonUniv_MileageServiceServer",
+  "version": "1.0.0",
+  "description": "MileageServiceServer",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "web3": "^1.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ValuableCodeMakers/KwangWoonUniv_MileageServiceServer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ValuableCodeMakers/KwangWoonUniv_MileageServiceServer/issues"
+  },
+  "homepage": "https://github.com/ValuableCodeMakers/KwangWoonUniv_MileageServiceServer#readme"
+}
