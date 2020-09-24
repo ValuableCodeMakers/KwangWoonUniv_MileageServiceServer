@@ -345,3 +345,4 @@ const abi = [
       "type": "function"
     }
   ]
+ module.exports = abi;
