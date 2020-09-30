@@ -8,7 +8,6 @@ const contractOwner = "0xb912da07Ea6edfA6FFf168b5C2AE747D1A966BfC"; // Contract 
 
 
 exports.totalToken = async (req, res) => {
-
   var web3 = new Web3(
     new Web3.providers.HttpProvider(`https://ropsten.infura.io/v3/${infuraKey}`)
   );
@@ -19,7 +18,7 @@ exports.totalToken = async (req, res) => {
     .call()
     .then((total) => {
       console.log("토큰의 총 개수 " + total);
-      res.send("토큰의 총 개수 " + total);
+      res.send("클라이언트 " + total);
     });
 };
 
@@ -35,7 +34,7 @@ exports.getToken = async (req, res) => {
   var gasPrice = req.gas;
 
   await contractInstance.methods
-    .transferFrom(contractOwner,"0x49370FEFe6d137a212e5aD9170EB4f2326719675", value).call().then((data)=>{
+    .transfer("0x49370FEFe6d137a212e5aD9170EB4f2326719675", value).call().then((data)=>{
         console.log("클라이언트에게 토큰 전송 api 실행");
 
         res.send(data);
