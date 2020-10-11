@@ -8,6 +8,6 @@ app.use(cors());
 app.use('/routes',routes);
 
 app.listen(3000, function () {
-  console.log("Connect, 3000 port!");
+  console.log("서버 실행 완료!");
 });
 
