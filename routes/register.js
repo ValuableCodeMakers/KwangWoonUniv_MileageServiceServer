@@ -1,30 +1,45 @@
-var mysql = require("mysql");
-var connection = mysql.createConnection({
-  host: "localhost",
+const mysql = require("mysql");
+const bkfd2Password = require('pbkdf2-password');
+const connection = mysql.createConnection({
+  host: "10.0.2.2",
   post: 3306,
   user: "root",
   password: "123456",
   database: "project_data",
 });
+var hasher = bkfd2Password();
+
 
 exports.register = async (req, res) => {
   console.log(req.body);
 
   var userId = req.body["id"];
   var userPwd = req.body["password"];
-  //var userPwdCheck = req.body["pwdCheck"];
 
   console.log(userId);
   console.log(userPwd);
-  connection.query(
-    `insert into project_data.user_data(id,pwd) values(?,?)`,
-    [userId, userPwd],
-    function (err, result, fields) {
-      if (err) console.log(err);
-      else {
-          res.send("회원가입 성공");
-      }
+  
+  hasher(
+    {password: userId},
+    function(err,pass,salt,hash){
+      let user = {
+        id: userId,
+        pwd: userPwd
+      };
+      connection.query(
+        `insert into project_data.user_data(id,pwd) SET ?`,
+        user,
+
+        function (err, result, fields) {
+          if (err) console.log(err);
+          else {
+              res.send("회원가입 성공");
+          }
+        }
+      );
     }
-  );
+  )
+
+ 
 
 };

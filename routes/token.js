@@ -22,7 +22,7 @@ exports.totalToken = async (req, res) => {
     });
 };
 
-exports.getToken =  (req, res) => {
+exports.getToken = (req, res) => {
   var web3 = new Web3(
     new Web3.providers.HttpProvider(`https://ropsten.infura.io/v3/${infuraKey}`)
   );
@@ -30,11 +30,11 @@ exports.getToken =  (req, res) => {
 
   var gasPrice = web3.gas;
 
-
-   contractInstance.methods
-    .transfer("0x49370FEFe6d137a212e5aD9170EB4f2326719675", value).call().then(
-      result=>{console.log("smartcontract Call :" + result)
-      res.send(result);}
-    )
-    
+  contractInstance.methods
+    .transfer("0x49370FEFe6d137a212e5aD9170EB4f2326719675", value)
+    .call()
+    .then((result) => {
+      console.log("smartcontract Call :" + result);
+      res.send(result);
+    });
 };

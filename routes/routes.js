@@ -1,5 +1,7 @@
 const express = require("express");
+
 const router = express.Router();
+
 const token = require("./token");
 const wallet = require('./wallet');
 const register = require('./register');

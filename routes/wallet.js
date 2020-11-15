@@ -6,9 +6,7 @@ exports.createWallet = async (req, res) => {
   const mnemonic = bip39.generateMnemonic(); // 니모딕 만들기
   const seed = bip39.mnemonicToSeed(mnemonic);
 
-  console.log("mnemonic" + mnemonic);
-
-
+  //지갑 생성
   seed.then((seed) => {
     // 시드에서 마스터 키 생성 HDPrivateKey(확장개인키)
     // BIP-32 이용
@@ -24,6 +22,7 @@ exports.createWallet = async (req, res) => {
 
     // public key에서 이더리움 주소 생성
     // 0x + 해시
+    // 0x 붙임으로 이더리움 주소임을 확인시켜줌
     let address =
       "0x" + ethUtil.pubToAddress(xPrivKey.publicKey, true).toString("hex");
 
@@ -32,7 +31,12 @@ exports.createWallet = async (req, res) => {
     // 이더리움 EIP-55 체크섬 주소로 변환
     // 소문자를 대문자로 변환
     address = ethUtil.toChecksumAddress(address).toString("hex");
+    return address;
 
     console.log("체크섬 주소: " + address);
-  });
+  }).then(address=>{
+    res.send({mnemonic,"address":address});
+  })
+
+
 };
