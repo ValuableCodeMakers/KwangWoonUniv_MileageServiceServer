@@ -1,11 +1,12 @@
 const express = require("express");
-
 const router = express.Router();
+const passport = require("passport");
+const LocalStrategy = require("passport-local").Strategy;
 
-const token = require("./token");
-const wallet = require('./wallet');
-const register = require('./register');
-const login = require('./login');
+const token = require("./token.js");
+const wallet = require('./wallet.js');
+const register = require('./register.js');
+const login = require('./login.js');
 
 // 스마트 컨트랙트
 router.post("/totalToken", token.totalToken);

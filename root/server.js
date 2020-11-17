@@ -2,7 +2,8 @@ const express = require("express");
 const session = require("express-session");
 const MySQLStore = require("express-mysql-session")(session);
 const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy; //
+const LocalStrategy = require("passport-local").Strategy;
+
 const cors = require("cors");
 const app = express();
 
@@ -15,7 +16,7 @@ app.use(
     resave: false,
     saveUninitialized: true,
     store: new MySQLStore({
-      host: "localhost",
+      host: "127.0.0.1",
       post: 3306,
       user: "root",
       password: "123456",
