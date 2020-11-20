@@ -1,5 +1,6 @@
 const mysql = require("mysql");
 const bkfd2Password = require("pbkdf2-password");
+
 const connection = mysql.createConnection({
   host: "127.0.0.1",
   post: 3306,
@@ -20,8 +21,8 @@ exports.register = async (req, res) => {
 
   hasher({ password: userPwd }, function (err, pass, salt, hash) {
     connection.query(
-      `insert into project_data.user_data(id,pwd) value(?,?)`,
-      [userId,userPwd],
+      `insert into project_data.user_data(id,password,user_salt) value(?,?,?)`,
+      [userId,hash,salt],
 
       function (err, result, fields) {
         if (err) console.log(err);
