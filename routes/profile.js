@@ -8,6 +8,21 @@ const connection = mysql.createConnection({
   database: "project_data",
 });
 
-exports.saveProfile = async(req, res) =>{
-    console.log(req.body);
-}
+exports.saveProfile = async (req, res) => {
+  console.log("프로필 저장 실행");
+  console.log(req.body);
+
+  var _name = req.body["name"];
+  var _nickname = req.body["nickname"];
+  var _department = req.body["department"];
+
+  connection.query(
+    `insert into project_data.user_data(name,nickname,department) value(?,?,?)`,
+    [_name, _nickname, _department],
+
+    function (err, result, fields) {
+      if (err) console.log(err);
+      else res.send("True");
+    }
+  );
+};

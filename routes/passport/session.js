@@ -1,5 +1,6 @@
 const mysql = require("mysql");
 const passport = require("passport");
+const localLogin = require('./localLogin.js');
 
 const connection = mysql.createConnection({
   host: "127.0.0.1",
@@ -9,13 +10,11 @@ const connection = mysql.createConnection({
   database: "project_data",
 });
 
-module.exports = () => {
+module.exports =function(){
   passport.serializeUser(function (user, done) {
     console.log("[SerializeUser] ", user);
-    //
-    // session store에 id 저장!
-    //
-    done(null, user.authId);
+    
+    done(null, user.id);  // session store에 id 저장!
   });
 
   // 로그인 사용자가 탭 이동시 콜백 함수 호출
@@ -31,4 +30,6 @@ module.exports = () => {
       return done(null, results[0]);
     });
   });
+
+  passport.use("local",localLogin);
 };

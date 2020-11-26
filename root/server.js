@@ -19,7 +19,7 @@ app.use(express.json());
 app.use(
   session({
     secret: "ABCD1234ABAB!@",
-    resave: false,
+    resave: true,
     saveUninitialized: true,
     store: new MySQLStore({
       host: "127.0.0.1",
@@ -30,10 +30,11 @@ app.use(
     }),
   })
 );
-app.use(passport.initialize()); // passport 사용
-app.use(passport.session()); // passport 사용시 session 활용
 
 app.use("/routes", routes)
+
+app.use(passport.initialize()); // passport 사용
+app.use(passport.session()); // passport 사용시 session 활용
 
 app.listen(3000, function () {
   console.log("서버 실행 완료!");

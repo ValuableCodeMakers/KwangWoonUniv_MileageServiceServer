@@ -1,25 +1,24 @@
 const passport = require("passport");
 
 exports.login = function (req, res, next) {
-  console.log(req.body);
   console.log("로그인 실행!");
 
   passport.authenticate("local", (err, user, info) => {
     console.log("authenticate callback");
-
     if (err) {
       console.log("authenticate callback Fail!");
       res.send("로그인 실패");
     }
 
     if (!user) {
-      console.log("fail");
-    } else if (user) {
-      if(user == 'NEW'){
-        console.log('새로운 유저');
-        res.send({ result: 'NEW_REGISTER' });
-      }else{
-        console.log('기존 유저');
+      console.log("authenticate callback Fail!");
+    } 
+    else if (user) {
+      if (user == "NEW") {
+        console.log("새로운 유저");
+        res.send({ result: "NEW_REGISTER" });
+      } else {
+        console.log("기존 유저");
         res.send({ result: true });
       }
     }

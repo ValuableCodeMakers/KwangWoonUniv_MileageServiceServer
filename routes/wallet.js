@@ -31,9 +31,10 @@ exports.createWallet = async (req, res) => {
     // 이더리움 EIP-55 체크섬 주소로 변환
     // 소문자를 대문자로 변환
     address = ethUtil.toChecksumAddress(address).toString("hex");
+    console.log("체크섬 주소: " + address);
+
     return address;
 
-    console.log("체크섬 주소: " + address);
   }).then(address=>{
     res.send({mnemonic,"address":address});
   })

@@ -14,15 +14,15 @@ exports.register = async (req, res) => {
   console.log("회원가입 실행");
   console.log(req.body);
 
-  var userId = req.body["id"];
-  var userPwd = req.body["password"];
+  var _id = req.body["id"];
+  var _password = req.body["password"];
 
-  console.log(userId, userPwd);
+  console.log(_id, _password);
 
-  hasher({ password: userPwd }, function (err, pass, salt, hash) {
+  hasher({ password: _password }, function (err, pass, salt, hash) {
     connection.query(
       `insert into project_data.user_data(id,password,user_salt) value(?,?,?)`,
-      [userId,hash,salt],
+      [_id,hash,salt],
 
       function (err, result, fields) {
         if (err) console.log(err);
