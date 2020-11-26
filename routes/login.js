@@ -11,12 +11,17 @@ exports.login = function (req, res, next) {
       console.log("authenticate callback Fail!");
       res.send("로그인 실패");
     }
-    console.log(err, user, info);
 
-    if(!user){
+    if (!user) {
       console.log("fail");
-    }else if(user){
-
+    } else if (user) {
+      if(user == 'NEW'){
+        console.log('새로운 유저');
+        res.send({ result: 'NEW_REGISTER' });
+      }else{
+        console.log('기존 유저');
+        res.send({ result: true });
+      }
     }
   })(req, res, next);
 };

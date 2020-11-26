@@ -36,17 +36,38 @@ module.exports = passport.use(
 
           var user = results[0];
           console.log(user);
-          return hasher(
-            { password: password, salt: user.user_salt }, 
-            function (err,pass,salt,hash) {
-              console.log(user.password);
-              console.log(hash);
+          return hasher({ password: password, salt: user.user_salt }, function (
+            err,
+            pass,
+            salt,
+            hash
+          ) {
+            console.log(user.password);
+            console.log(hash);
             if (hash === user.password) {
               // 사용자의 비밀번호가 올바른지 확인
               console.log("유저 확인", user);
-              done(null, user); // user 라는 값을 passport.serializeUser의 첫번째 인자로 전송
-            } 
-            else done(null, false);
+
+              connection.query(
+                `select department from project_data.user_data where id = ?`,
+                id,
+                function (err, result, fields) {
+                  if (err) console.log(err);
+                  else {
+                    console.log(JSON.stringify(result[0].department));
+
+                    if (
+                      result[0].department != null &&
+                      result[0].department != "null"
+                    ) {
+                      done(null, user); // user 라는 값을 passport.serializeUser의 첫번째 인자로 전송
+                    } else {
+                      done(null, 'NEW');
+                    }
+                  }
+                }
+              );
+            } else done(null, false);
           });
         }
       );
