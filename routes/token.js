@@ -1,28 +1,26 @@
 const contractAbi = require("../src/contractAbi.js"); // abi 불러오기
-var BigNumber = require("big-number");
 const Web3 = require("web3");
 const infuraKey = "a96fd49a742b4e60a94afc93459aac77"; // infura Api 키
 const value = "10000000000000000000";
 
-const contractAddress = "0xb51019ff4814f171026d5f8f4a25b6423f846d0e"; // Contract 주소 Token 주소
+const contractAddress = "0xb51019ff4814f171026d5f8f4a25b6423f846d0e"; // Contract 주소, Token 주소
 const contractOwner = "0xb912da07Ea6edfA6FFf168b5C2AE747D1A966BfC"; // Contract Creater
 
-exports.totalToken = async (req, res) => {
+exports.getBalanceToken = async (req, res) => {
   var web3 = new Web3(
     new Web3.providers.HttpProvider(`https://ropsten.infura.io/v3/${infuraKey}`)
   );
   var contractInstance = new web3.eth.Contract(contractAbi, contractAddress);
 
   contractInstance.methods
-    .name()
+    .balanceOf("0x7253d9f6D60221a3e30C3270E8385ab09ACD4e23") // 사용자 지갑 주소
     .call()
     .then((total) => {
-      console.log("토큰의 총 개수 " + total);
-      res.send("클라이언트 " + total);
+      res.send(total);
     });
 };
 
-exports.getToken = (req, res) => {
+exports.getToken = async (req, res) => {
   var web3 = new Web3(
     new Web3.providers.HttpProvider(`https://ropsten.infura.io/v3/${infuraKey}`)
   );

@@ -5,6 +5,7 @@ exports.login = function (req, res, next) {
 
   passport.authenticate("local", (err, user, info) => {
     console.log("authenticate callback");
+
     if (err) {
       console.log("authenticate callback Fail!");
       res.send("로그인 실패");
@@ -12,16 +13,22 @@ exports.login = function (req, res, next) {
     
     if (!user) {
       console.log("authenticate callback Fail!");
-    } else if (user) {
+    } 
+    else if (user) {
+      console.log(user.name);
+
       console.log("authenticate callback Success!");
-      if (user.name = null || user.name == 'null' || user.name == '') {
+
+      if (user.name == null || user.name == false || user.name == '') {
         console.log("새로운 유저");
+
         return req.login(user, function (err) {
           if (err) console.log(err);
           res.send({ result: "NEW_REGISTER" });
         });
       } else {
         console.log("기존 유저");
+
         return req.login(user, function (err) {
           if (err) console.log(err);
           res.send({ result: true });
