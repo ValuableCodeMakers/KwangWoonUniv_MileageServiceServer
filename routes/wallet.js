@@ -1,7 +1,11 @@
 const bip32 = require("bip32");
 const bip39 = require("bip39");
 const ethUtil = require("ethereumjs-util");
-const ethers = require("ethers");
+const Web3 = require("web3");
+
+const contractAbi = require("../src/contractAbi.js"); // abi 불러오기
+const contractAddress = "0xb51019ff4814f171026d5f8f4a25b6423f846d0e"; // Contract 주소, Token 주소
+const infuraKey = "a96fd49a742b4e60a94afc93459aac77"; // infura Api 키
 
 exports.createWallet = async (req, res) => {
   const mnemonic = bip39.generateMnemonic(); // 니모딕 만들기
@@ -42,15 +46,24 @@ exports.createWallet = async (req, res) => {
     });
 };
 
-exports.getWalletInfo = (req, res) => {
-  const tokenAddress = "0xb51019ff4814f171026d5f8f4a25b6423f846d0e" // Contract 주소, Token 주소
+exports.getWalletAddress = (req, res) => {
+  console.log(req);
 
-  let provider = ethers.getDefaultProvider("ropsten"); // 테스트넷에서 정보 얻기
+  
+};
 
-  provider
-    .getBalance("0xb912da07Ea6edfA6FFf168b5C2AE747D1A966BfC")
-    .then((balance) => {
-      const etherString = ethers.utils.formatEther(balance);
-      res.send({ balance: etherString });
+exports.getWalletBalance = async (req, res) => {
+  console.log(req);
+  //const walletAddress
+  let web3 = new Web3(
+    new Web3.providers.HttpProvider(`https://ropsten.infura.io/v3/${infuraKey}`)
+  );
+  let contractInstance = new web3.eth.Contract(contractAbi, contractAddress);
+
+  contractInstance.methods
+    .balanceOf("0x7253d9f6D60221a3e30C3270E8385ab09ACD4e23") // 사용자 지갑 주소
+    .call()
+    .then((total) => {
+      res.send({ balance: total });
     });
 };

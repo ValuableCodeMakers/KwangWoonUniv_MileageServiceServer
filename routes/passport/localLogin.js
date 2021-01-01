@@ -28,30 +28,46 @@ module.exports = passport.use(
         id,
         function (err, results) {
           if (err) return done(err);
-
+          console.log("user data in DB",results);
           if (!results[0]) {
             console.log("DB에 회원정보(아이디)가 없습니다.");
             return done(err);
           }
 
-          var user = results[0];
+          let user = results[0];
           return hasher(
             { password: password, salt: user.user_salt },
             function (err, pass, salt, hash) {
               if (hash === user.password) {
                 // 사용자의 비밀번호가 올바른지 확인
-                console.log("유저 확인", user);
-
+                let userWalletAddress;
                 connection.query(
-                  `select department from project_data.user_data where id = ?`,
-                  id,
-                  function (err, result, fields) {
-                    if (err) console.log(err);
-                    else {
-                      done(null, user); // user 라는 값을 passport.serializeUser의 첫번째 인자로 전송
-                    }
+                  `select address from project_data.user_wallet where id = ?`,
+                  user.id,
+                  function (err, results) {
+                    if (err) return done(err);
+                    console.log("walletId in DB", results);
+
+                    userWalletAddress = results[0].address;
+                    const userInfo = {
+                      user: user,
+                      walletAddress: userWalletAddress,
+                    };
+
+                    console.log("Session data", userInfo);
+                    done(null, userInfo); // userInfo 라는 값을 passport.serializeUser의 첫번째 인자로 전송
                   }
                 );
+
+                // connection.query(
+                //   `select department from project_data.user_data where id = ?`,
+                //   id,
+                //   function (err, result, fields) {
+                //     if (err) console.log(err);
+                //     else {
+                //     }
+                //   }
+                // );
               } else done(null, false);
             }
           );
