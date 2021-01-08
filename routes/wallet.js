@@ -46,22 +46,14 @@ exports.createWallet = async (req, res) => {
     });
 };
 
-exports.getWalletAddress = (req, res) => {
-  console.log(req);
-
-  
-};
-
 exports.getWalletBalance = async (req, res) => {
-  console.log(req);
-  //const walletAddress
   let web3 = new Web3(
     new Web3.providers.HttpProvider(`https://ropsten.infura.io/v3/${infuraKey}`)
   );
   let contractInstance = new web3.eth.Contract(contractAbi, contractAddress);
 
   contractInstance.methods
-    .balanceOf("0x7253d9f6D60221a3e30C3270E8385ab09ACD4e23") // 사용자 지갑 주소
+    .balanceOf(req.body.address) // 사용자 지갑 주소
     .call()
     .then((total) => {
       res.send({ balance: total });

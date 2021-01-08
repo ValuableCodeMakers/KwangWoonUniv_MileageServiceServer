@@ -15,12 +15,13 @@ router.post("/getToken", token.getToken);
 // 지갑 관련
 router.post("/createWallet", wallet.createWallet);
 router.post('/getWalletBalance', wallet.getWalletBalance);
-router.post('/getWalletAddress', wallet.getWalletAddress);
 
 // 로그인 & 회원가입
 router.post("/login", login.login);
 router.post("/logout", logout.logout);
 router.post("/register", register.register);
 router.post('/saveProfile', profile.saveProfile); 
+router.get('/getUserId', profile.getUserId)
+router.post('/getWalletAddress', profile.getWalletAddress);
 
 module.exports = router;

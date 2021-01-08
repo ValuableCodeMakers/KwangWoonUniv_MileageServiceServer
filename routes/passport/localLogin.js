@@ -28,7 +28,7 @@ module.exports = passport.use(
         id,
         function (err, results) {
           if (err) return done(err);
-          console.log("user data in DB",results);
+          console.log("user data in DB", results);
           if (!results[0]) {
             console.log("DB에 회원정보(아이디)가 없습니다.");
             return done(err);
@@ -46,9 +46,13 @@ module.exports = passport.use(
                   user.id,
                   function (err, results) {
                     if (err) return done(err);
-                    console.log("walletId in DB", results);
+                    console.log("walletId in DB", results[0]);
 
-                    userWalletAddress = results[0].address;
+                    if (results[0] == undefined) {
+                      userWalletAddress =""
+                    } else {
+                      userWalletAddress = results[0].address;
+                    }
                     const userInfo = {
                       user: user,
                       walletAddress: userWalletAddress,

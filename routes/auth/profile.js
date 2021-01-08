@@ -8,6 +8,26 @@ const connection = mysql.createConnection({
   database: "project_data",
 });
 
+exports.getUserId = async (req, res) => {
+  const curId = req.session.passport.user;
+  res.send({ userId: curId });
+};
+
+exports.getWalletAddress = (req, res) => {
+  const userId = req.body.userId;
+  connection.query(
+    `select address from project_data.user_wallet where id = ?`,
+    userId,
+    function (err, results) {
+      if (err) return done(err);
+
+      const userWalletAddress = results[0].address;
+
+      res.send({ userWalletAddress: userWalletAddress });
+    }
+  );
+};
+
 exports.saveProfile = async (req, res) => {
   console.log("프로필 저장 실행");
   console.log(req.body);
