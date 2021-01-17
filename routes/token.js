@@ -40,7 +40,6 @@ exports.getToken = async (req, res) => {
 // 상대에게 토큰 전송
 exports.transferToken = async (req, res) => {
   console.log(req.body);
-  console.log(req.body.from, req.body.to, req.body.total);
 
   let web3 = new Web3(
     new Web3.providers.HttpProvider(`https://ropsten.infura.io/v3/${infuraKey}`)
@@ -48,15 +47,29 @@ exports.transferToken = async (req, res) => {
 
   let contractInstance = new web3.eth.Contract(contractAbi, contractAddress);
 
-  let address = web3.utils.isAddress(req.body.from);
+  //let address = web3.utils.isAddress(req.body.from);
 
-  console.log(address);
+  let value = BigNumber(1000000000000000000000).toFixed();
+  let gasPrice = web3.eth.getGasPrice();
 
-  contractInstance.methods
-    .transferFrom(req.body.to, req.body.from, 1000)
-    .call()
-    .then((result) => {
-      console.log(result);
-      res.send(result);
-    });
+  console.log(value);
+  console.log(gasPrice);
+
+  contractInstance.methods.transfer(req.body.from, value).send(
+    {
+      from: "0xb51019ff4814f171026d5f8f4a25b6423f846d0e",
+      gasPrice: gasPrice,
+      gas: 100000,
+    },
+    function (err, txhash) {
+      try {
+        console.log(txhash);
+        res.send(txhash);
+      } catch (err) {
+        console.log("Send Token Error ==>>>>" + err.toString());
+
+        res.json({ code: 310, err: err.toString() });
+      }
+    }
+  );
 };
