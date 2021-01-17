@@ -20,7 +20,6 @@ exports.getWalletAddress = (req, res) => {
     userId,
     function (err, results) {
       if (err) return done(err);
-
       const userWalletAddress = results[0].address;
 
       res.send({ userWalletAddress: userWalletAddress });

@@ -8,15 +8,15 @@ const login = require("./auth/login.js");
 const logout = require("./auth/logout.js");
 const profile = require("./auth/profile.js");
 
-// 스마트 컨트랙트
-router.post("/totalToken", token.getBalanceToken);
+// 스마트 컨트랙트, 토큰 관련
+router.post("/getTokenBalance", token.getTokenBalance);
 router.post("/getToken", token.getToken);
+router.post("/transferToken", token.transferToken)
 
 // 지갑 관련
 router.post("/createWallet", wallet.createWallet);
-router.post('/getWalletBalance', wallet.getWalletBalance);
 
-// 로그인 & 회원가입
+// 로그인 & 회원가입, 회원 정보
 router.post("/login", login.login);
 router.post("/logout", logout.logout);
 router.post("/register", register.register);

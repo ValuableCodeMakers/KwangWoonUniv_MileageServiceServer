@@ -46,16 +46,4 @@ exports.createWallet = async (req, res) => {
     });
 };
 
-exports.getWalletBalance = async (req, res) => {
-  let web3 = new Web3(
-    new Web3.providers.HttpProvider(`https://ropsten.infura.io/v3/${infuraKey}`)
-  );
-  let contractInstance = new web3.eth.Contract(contractAbi, contractAddress);
 
-  contractInstance.methods
-    .balanceOf(req.body.address) // 사용자 지갑 주소
-    .call()
-    .then((total) => {
-      res.send({ balance: total });
-    });
-};

@@ -19,6 +19,7 @@ exports.login = function (req, res, next) {
       });
     } else if (user) {
       console.log("authenticate callback Success!");
+      console.log(userInfo)
 
       if (user.name == null || user.name == false || user.name == "") {
         console.log("새로운 유저");
