@@ -8,6 +8,7 @@
     "bip32": "^2.0.6",
     "bip39": "^3.0.2",
     "cors": "^2.8.5",
+    "ethereumjs-tx": "^2.1.2",
     "ethereumjs-util": "^7.0.6",
     "express": "^4.17.1",
     "express-mysql-session": "^2.1.4",

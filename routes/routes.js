@@ -10,7 +10,7 @@ const profile = require("./auth/profile.js");
 
 // 스마트 컨트랙트, 토큰 관련
 router.post("/getTokenBalance", token.getTokenBalance);
-router.post("/getToken", token.getToken);
+router.post("/getEventToken", token.getEventToken);
 router.post("/transferToken", token.transferToken)
 
 // 지갑 관련
