@@ -1,11 +1,6 @@
 const bip32 = require("bip32");
 const bip39 = require("bip39");
 const ethUtil = require("ethereumjs-util");
-const Web3 = require("web3");
-
-const contractAbi = require("../src/contractAbi.js"); // abi 불러오기
-const contractAddress = "0xb51019ff4814f171026d5f8f4a25b6423f846d0e"; // Contract 주소, Token 주소
-const infuraKey = "a96fd49a742b4e60a94afc93459aac77"; // infura Api 키
 
 exports.createWallet = async (req, res) => {
   const mnemonic = bip39.generateMnemonic(); // 니모딕 만들기
@@ -39,11 +34,13 @@ exports.createWallet = async (req, res) => {
       address = ethUtil.toChecksumAddress(address).toString("hex");
       console.log("체크섬 주소: " + address);
 
-      return address;
+      return { address, privateKey };
     })
-    .then((address) => {
-      res.send({ mnemonic, address: address });
+    .then((result) => {
+      res.send({
+        mnemonic: mnemonic,
+        address: result.address,
+        privateKey: result.privateKey,
+      });
     });
 };
-
-

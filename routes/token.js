@@ -1,12 +1,19 @@
 const BigNumber = require("bignumber.js");
 const contractAbi = require("../src/contractAbi.js"); // abi 불러오기
 const Web3 = require("web3");
+const mysql = require("mysql");
+
 const infuraKey = "a96fd49a742b4e60a94afc93459aac77"; // infura Api 키
-const value = "10000000000000000000";
 const contractAddress = "0xb51019ff4814f171026d5f8f4a25b6423f846d0e"; // Contract 주소, Token 주소
 const contractOwnerAddress = "0xb912da07Ea6edfA6FFf168b5C2AE747D1A966BfC"; // Contract 생성자 주소
-const contractPrivateKey =
-  "d6e488dc82d184661115053081da5815c224f0ef124b74a24f089e2fe7b9e49e";
+
+const connection = mysql.createConnection({
+  host: "127.0.0.1",
+  post: 3306,
+  user: "root",
+  password: "123456",
+  database: "project_data",
+});
 
 // 지갑의 토큰 개수
 exports.getTokenBalance = async (req, res) => {
@@ -35,13 +42,14 @@ exports.getEventToken = async (req, res) => {
 exports.transferToken = async (req, res) => {
   console.log(req.body);
 
-  let web3 = new Web3(
-    new Web3.providers.HttpProvider(`https://ropsten.infura.io/v3/${infuraKey}`)
-  );
-
   const from = req.body.from;
   const to = req.body.to;
   const value = req.body.value;
+  let fromPrivateKey = "";
+
+  let web3 = new Web3(
+    new Web3.providers.HttpProvider(`https://ropsten.infura.io/v3/${infuraKey}`)
+  );
 
   try {
     web3.eth.getBlock("latest", false, (error, result) => {
@@ -59,6 +67,18 @@ exports.transferToken = async (req, res) => {
       contractInstance.methods
         .decimals()
         .call()
+        .then((result) => {
+          connection.query(
+            `select privateKey from project_data.user_wallet where id = ?`,
+            req.body.id,
+            function (err, results) {
+              console.log(results);
+              if (err) return done(err);
+              fromPrivateKey = results[0].privateKey;
+            }
+          );
+          return result;
+        })
         .then(function (result) {
           try {
             var decimals = result; // 18
@@ -71,7 +91,7 @@ exports.transferToken = async (req, res) => {
               try {
                 const Tx = require("ethereumjs-tx").Transaction;
                 const privateKey = Buffer.from(
-                  "3b7d194804d43d42a1fbba86e0e8357f9e57835f5cab9685346996f58dd1dccf", // 개인키 받아와야됌
+                  fromPrivateKey, // 개인키 받아와야됌
                   "hex"
                 );
 

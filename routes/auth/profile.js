@@ -36,6 +36,7 @@ exports.saveProfile = async (req, res) => {
   const _department = req.body["department"];
   const _mnemonic = req.body["mnemonic"];
   const _address = req.body["address"];
+  const _privateKey = req.body["privateKey"];
 
   const curId = req.session.passport.user;
 
@@ -49,8 +50,8 @@ exports.saveProfile = async (req, res) => {
   );
 
   connection.query(
-    `INSERT INTO project_data.user_wallet(id,mnemonic,address) VALUE(?,?,?)`,
-    [curId, _mnemonic, _address],
+    `INSERT INTO project_data.user_wallet(id,mnemonic,address,privateKey) VALUE(?,?,?,?)`,
+    [curId, _mnemonic, _address, _privateKey],
 
     function (err, result, fields) {
       if (err) console.log(err);
