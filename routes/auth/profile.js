@@ -1,5 +1,4 @@
 const mysql = require("mysql");
-
 const connection = mysql.createConnection({
   host: "127.0.0.1",
   post: 3306,
@@ -7,25 +6,7 @@ const connection = mysql.createConnection({
   password: "123456",
   database: "project_data",
 });
-
-exports.getUserId = async (req, res) => {
-  const curId = req.session.passport.user;
-  res.send({ userId: curId });
-};
-
-exports.getWalletAddress = (req, res) => {
-  const userId = req.body.userId;
-  connection.query(
-    `select address from project_data.user_wallet where id = ?`,
-    userId,
-    function (err, results) {
-      if (err) return done(err);
-      const userWalletAddress = results[0].address;
-
-      res.send({ userWalletAddress: userWalletAddress });
-    }
-  );
-};
+const fs = require("fs");
 
 exports.saveProfile = async (req, res) => {
   console.log("프로필 저장 실행");
@@ -56,6 +37,72 @@ exports.saveProfile = async (req, res) => {
     function (err, result, fields) {
       if (err) console.log(err);
       else res.send("True");
+    }
+  );
+};
+
+exports.getUserId = async (req, res) => {
+  const curId = req.session.passport.user;
+  res.send({ userId: curId });
+};
+
+exports.getWalletAddress = (req, res) => {
+  const userId = req.body.userId;
+  connection.query(
+    `select address from project_data.user_wallet where id = ?`,
+    userId,
+    function (err, results) {
+      if (err) return done(err);
+      const userWalletAddress = results[0].address;
+
+      res.send({ userWalletAddress: userWalletAddress });
+    }
+  );
+};
+
+exports.savePhoto = async (req, res) => {
+  console.log(req.files.image[0]);
+  console.log(req.body.userId);
+
+  const userId = req.body.userId;
+  const type = req.files.image[0].mimetype;
+  const filename = req.files.image[0].filename;
+  const path = req.files.image[0].path;
+
+  connection.query(
+    `insert into project_data.user_photo(id,type,filename,path) value(?,?,?,?)`,
+    [userId, type, filename, path],
+    function (err, results) {
+      if (err) {
+        console.log(err);
+        res.send({ photoResult: false });
+      } else res.send({ photoResult: true });
+    }
+  );
+};
+
+exports.getPhoto = async (req, res) => {
+  console.log(req.body.userId);
+  const userId = req.body.userId;
+
+  connection.query(
+    `select * from project_data.user_photo where id=?`,
+    userId,
+    function (err, results) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(results);
+
+        fs.readFile(results.filename, function (err, data) {
+          if (err) console.log(err);
+          else {
+            res.writeHead(200, { "Context-Type": "image/jpg" }); 
+            res.write(data);
+            res.end();
+          }
+        });
+      }
     }
   );
 };
