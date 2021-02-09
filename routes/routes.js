@@ -42,7 +42,7 @@ router.post("/getPhoto", profile.getPhoto);
 router.post("/saveProfile", profile.saveProfile);
 router.post(
   "/savePhoto",
-  upload.fields([{ name: "image" }, { name: "userId" }]),
+  upload.fields([{ name: "userId" }, { name: "image" }]),
   profile.savePhoto
 );
 module.exports = router;

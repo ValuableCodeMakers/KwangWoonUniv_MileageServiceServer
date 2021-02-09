@@ -82,7 +82,6 @@ exports.savePhoto = async (req, res) => {
 };
 
 exports.getPhoto = async (req, res) => {
-  console.log(req.body.userId);
   const userId = req.body.userId;
 
   connection.query(
@@ -92,16 +91,8 @@ exports.getPhoto = async (req, res) => {
       if (err) {
         console.log(err);
       } else {
-        console.log(results);
+        res.send({ photo: results });
 
-        fs.readFile(results.filename, function (err, data) {
-          if (err) console.log(err);
-          else {
-            res.writeHead(200, { "Context-Type": "image/jpg" }); 
-            res.write(data);
-            res.end();
-          }
-        });
       }
     }
   );

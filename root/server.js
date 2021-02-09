@@ -15,6 +15,7 @@ app.use(
   })
 );
 app.use(express.json());
+app.use(express.static('profiles'))
 app.use(
   session({
     secret: "ABCD1234ABAB!@",
