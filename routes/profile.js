@@ -7,6 +7,7 @@ const connection = mysql.createConnection({
   database: "project_data",
 });
 const fs = require("fs");
+const path = require("path");
 
 exports.saveProfile = async (req, res) => {
   console.log("프로필 저장 실행");
@@ -42,8 +43,8 @@ exports.saveProfile = async (req, res) => {
 };
 
 exports.getUserId = async (req, res) => {
-  const curId = req.session.passport.user;
-  res.send({ userId: curId });
+  const userId = req.session.passport.user;
+  res.send({ userId: userId });
 };
 
 exports.getWalletAddress = (req, res) => {
@@ -81,6 +82,51 @@ exports.savePhoto = async (req, res) => {
   );
 };
 
+exports.changePhoto = async (req, res) => {
+  const userId = req.body.userId;
+  const type = req.files.image[0].mimetype;
+  const filename = req.files.image[0].filename;
+  const path = req.files.image[0].path;
+  let filePath;
+
+  // 서버에서 사진 삭제
+  connection.query(
+    `select * from project_data.user_photo where id=?`,
+    userId,
+    function (err, results) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(results)
+        filePath = path.join(__dirname, `../root/${results[0].path}`);
+        console.log(filePath);
+
+        // fs.access(filePath, fs.constants.F_OK, (err) => {
+        //   if (err) return console.log("삭제할 수 없는 파일입니다");
+
+        //   fs.unlink(filePath, (err) =>
+        //     err
+        //       ? console.log(err)
+        //       : console.log(`${filePath} 를 정상적으로 삭제했습니다`)
+        //   );
+        // });
+      }
+    }
+  );
+
+  // DB에 사진 정보 덮어쓰기
+  // connection.query(
+  //   `UPDATE project_data.user_photo SET type=?,filename=?,path=? WHERE id=?`,
+  //   [type, filename, path, userId],
+  //   function (err, results) {
+  //     if (err) {
+  //       console.log(err);
+  //       res.send({ photoResult: false });
+  //     } else res.send({ photoResult: true });
+  //   }
+  // );
+};
+
 exports.getPhoto = async (req, res) => {
   const userId = req.body.userId;
 
@@ -92,7 +138,6 @@ exports.getPhoto = async (req, res) => {
         console.log(err);
       } else {
         res.send({ photo: results });
-
       }
     }
   );
