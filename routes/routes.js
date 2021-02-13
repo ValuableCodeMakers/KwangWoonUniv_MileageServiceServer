@@ -10,10 +10,7 @@ const upload = multer({
     },
     filename(req, file, cb) {
       const ext = path.extname(file.originalname);
-      cb(
-        null,
-        req.body.userId + "/" + path.basename(file.originalname, ext) + ext
-      );
+      cb(null, req.body.userId + path.basename(file.originalname, ext) + ext);
     },
   }),
 });

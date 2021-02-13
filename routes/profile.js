@@ -83,48 +83,48 @@ exports.savePhoto = async (req, res) => {
 };
 
 exports.changePhoto = async (req, res) => {
-  const userId = req.body.userId;
-  const type = req.files.image[0].mimetype;
-  const filename = req.files.image[0].filename;
-  const path = req.files.image[0].path;
-  let filePath;
+  const _userId = req.body.userId;
+  const _type = req.files.image[0].mimetype;
+  const _filename = req.files.image[0].filename;
+  const _path = req.files.image[0].path;
 
   // 서버에서 사진 삭제
   connection.query(
     `select * from project_data.user_photo where id=?`,
-    userId,
+    _userId,
     function (err, results) {
       if (err) {
         console.log(err);
       } else {
-        console.log(results)
-        filePath = path.join(__dirname, `../root/${results[0].path}`);
-        console.log(filePath);
+        if (results.length != 0) {
+          const filePath = path.join(__dirname, `../root/${results[0].path}`);
+          console.log(`삭제할 경로 ${filePath}`);
 
-        // fs.access(filePath, fs.constants.F_OK, (err) => {
-        //   if (err) return console.log("삭제할 수 없는 파일입니다");
+          fs.access(filePath, fs.constants.F_OK, (err) => {
+            if (err) return console.log("삭제할 수 없는 파일입니다");
 
-        //   fs.unlink(filePath, (err) =>
-        //     err
-        //       ? console.log(err)
-        //       : console.log(`${filePath} 를 정상적으로 삭제했습니다`)
-        //   );
-        // });
+            fs.unlink(filePath, (err) =>
+              err
+                ? console.log(err)
+                : console.log(`${filePath} 를 정상적으로 삭제했습니다`)
+            );
+          });
+        }
+
+        // DB에 사진 정보 덮어쓰기
+        connection.query(
+          `INSERT INTO project_data.user_photo SET id=?,type=?,filename=?,path=? ON DUPLICATE KEY UPDATE type=?,filename=?,path=?`,
+          [_userId, _type, _filename, _path, _type, _filename, _path],
+          function (err, results) {
+            if (err) {
+              console.log(err);
+              res.send({ photoResult: false });
+            } else res.send({ photoResult: true });
+          }
+        );
       }
     }
   );
-
-  // DB에 사진 정보 덮어쓰기
-  // connection.query(
-  //   `UPDATE project_data.user_photo SET type=?,filename=?,path=? WHERE id=?`,
-  //   [type, filename, path, userId],
-  //   function (err, results) {
-  //     if (err) {
-  //       console.log(err);
-  //       res.send({ photoResult: false });
-  //     } else res.send({ photoResult: true });
-  //   }
-  // );
 };
 
 exports.getPhoto = async (req, res) => {
@@ -137,7 +137,11 @@ exports.getPhoto = async (req, res) => {
       if (err) {
         console.log(err);
       } else {
-        res.send({ photo: results });
+        if (results.length != 0) {
+          res.send({ photo: results });
+        } else {
+          res.send({ photo: false });
+        }
       }
     }
   );
