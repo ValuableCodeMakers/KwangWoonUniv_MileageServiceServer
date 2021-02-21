@@ -37,21 +37,22 @@ router.post("/logout", logout.logout);
 router.post("/register", register.register);
 
 // 회원 정보
+router.post("/saveProfile", profile.saveProfile);
 router.get("/getUserId", profile.getUserId);
 router.post("/getWalletAddress", profile.getWalletAddress);
+router.post("/getProfileEtc", profile.getProfileEtc);
+
+// 회원 정보 - 프로필 사진 설정
+router.post(
+  "/savePhoto",
+  upload.fields([{ name: "userId" }, { name: "image" }]),
+  profile.savePhoto
+);
 router.post("/getPhoto", profile.getPhoto);
 router.post(
   "/changePhoto",
   upload.fields([{ name: "userId" }, { name: "image" }]),
   profile.changePhoto
-);
-
-// 프로필 사진 설정
-router.post("/saveProfile", profile.saveProfile);
-router.post(
-  "/savePhoto",
-  upload.fields([{ name: "userId" }, { name: "image" }]),
-  profile.savePhoto
 );
 
 // 랭킹 관련

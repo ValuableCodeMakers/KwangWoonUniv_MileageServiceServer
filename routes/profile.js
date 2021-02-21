@@ -20,11 +20,11 @@ exports.saveProfile = async (req, res) => {
   const _address = req.body["address"];
   const _privateKey = req.body["privateKey"];
 
-  const curId = req.session.passport.user;
+  const _curId = req.session.passport.user;
 
   connection.query(
     `UPDATE project_data.user_data SET name=?, nickname=?, department=? WHERE id = ?`,
-    [_name, _nickname, _department, curId],
+    [_name, _nickname, _department, _curId],
 
     function (err, result, fields) {
       if (err) console.log(err);
@@ -33,7 +33,7 @@ exports.saveProfile = async (req, res) => {
 
   connection.query(
     `INSERT INTO project_data.user_wallet(id,mnemonic,address,privateKey) VALUE(?,?,?,?)`,
-    [curId, _mnemonic, _address, _privateKey],
+    [_curId, _mnemonic, _address, _privateKey],
 
     function (err, result, fields) {
       if (err) console.log(err);
@@ -43,15 +43,15 @@ exports.saveProfile = async (req, res) => {
 };
 
 exports.getUserId = async (req, res) => {
-  const userId = req.session.passport.user;
-  res.send({ userId: userId });
+  const _userId = req.session.passport.user;
+  res.send({ userId: _userId });
 };
 
 exports.getWalletAddress = (req, res) => {
-  const userId = req.body.userId;
+  const _userId = req.body.userId;
   connection.query(
-    `select address from project_data.user_wallet where id = ?`,
-    userId,
+    `SELECT address FROM project_data.user_wallet WHERE id = ?`,
+    _userId,
     function (err, results) {
       if (err) return done(err);
       const userWalletAddress = results[0].address;
@@ -61,23 +61,67 @@ exports.getWalletAddress = (req, res) => {
   );
 };
 
+exports.getProfileEtc = (req, res) => {
+  const _userId = req.body.userId;
+  connection.query(
+    "SELECT name,nickname,department FROM project_data.user_data WHERE id = ?",
+    _userId,
+    function (err, results) {
+      if (err) {
+        res.send(err);
+      }
+
+      const userName = results[0].name;
+      const userNickname = results[0].nickname;
+      const userDepartment = results[0].department;
+
+      res.send({
+        userName: userName,
+        userNickname: userNickname,
+        userDepartment: userDepartment,
+      });
+    }
+  );
+};
+
+// 프로필 사진 관련
 exports.savePhoto = async (req, res) => {
   console.log(req.files.image[0]);
   console.log(req.body.userId);
 
-  const userId = req.body.userId;
-  const type = req.files.image[0].mimetype;
-  const filename = req.files.image[0].filename;
-  const path = req.files.image[0].path;
+  const _userId = req.body.userId;
+  const _type = req.files.image[0].mimetype;
+  const _filename = req.files.image[0].filename;
+  const _path = req.files.image[0].path;
 
   connection.query(
     `insert into project_data.user_photo(id,type,filename,path) value(?,?,?,?)`,
-    [userId, type, filename, path],
+    [_userId, _type, _filename, _path],
     function (err, results) {
       if (err) {
         console.log(err);
         res.send({ photoResult: false });
       } else res.send({ photoResult: true });
+    }
+  );
+};
+
+exports.getPhoto = async (req, res) => {
+  const _userId = req.body.userId;
+
+  connection.query(
+    `select * from project_data.user_photo where id=?`,
+    _userId,
+    function (err, results) {
+      if (err) {
+        console.log(err);
+      } else {
+        if (results.length != 0) {
+          res.send({ photo: results });
+        } else {
+          res.send({ photo: false });
+        }
+      }
     }
   );
 };
@@ -122,26 +166,6 @@ exports.changePhoto = async (req, res) => {
             } else res.send({ photoResult: true });
           }
         );
-      }
-    }
-  );
-};
-
-exports.getPhoto = async (req, res) => {
-  const userId = req.body.userId;
-
-  connection.query(
-    `select * from project_data.user_photo where id=?`,
-    userId,
-    function (err, results) {
-      if (err) {
-        console.log(err);
-      } else {
-        if (results.length != 0) {
-          res.send({ photo: results });
-        } else {
-          res.send({ photo: false });
-        }
       }
     }
   );
