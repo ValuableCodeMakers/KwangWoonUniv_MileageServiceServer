@@ -126,6 +126,21 @@ exports.getPhoto = async (req, res) => {
   );
 };
 
+exports.getPhotos = async (req, res) => {
+  var sqlString = 'id=' + req.body.user1 + '||id=' + req.body.user2 + '||id=' + req.body.user3 + '||id=' + req.body.user4 + '||id=' + req.body.user5;
+  console.log("getting photos...");
+  connection.query(
+    'select id,filename from project_data.userphoto where ?', sqlString,
+    function (err, results) {
+      if (err) {
+        console.log(err);
+      } else {
+        res.send({ photos: results });
+      }
+    }
+  );
+};
+
 exports.changePhoto = async (req, res) => {
   const _userId = req.body.userId;
   const _type = req.files.image[0].mimetype;

@@ -49,6 +49,7 @@ router.post(
   profile.savePhoto
 );
 router.post("/getPhoto", profile.getPhoto);
+router.post("/getPhotos", profile.getPhotos);
 router.post(
   "/changePhoto",
   upload.fields([{ name: "userId" }, { name: "image" }]),
