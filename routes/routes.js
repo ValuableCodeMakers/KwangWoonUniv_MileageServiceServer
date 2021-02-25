@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const path = require("path");
-
+// 프로필 사진 업로드에 사용
 const upload = multer({
   storage: multer.diskStorage({
     destination: function (req, file, cb) {
@@ -14,7 +14,6 @@ const upload = multer({
     },
   }),
 });
-
 const token = require("./token.js");
 const wallet = require("./wallet.js");
 const register = require("./auth/register.js");
@@ -33,7 +32,7 @@ router.post("/createWallet", wallet.createWallet);
 
 // 로그인 & 회원가입
 router.post("/login", login.login);
-router.post("/logout", logout.logout);
+router.get("/logout", logout.logout);
 router.post("/register", register.register);
 
 // 회원 정보
