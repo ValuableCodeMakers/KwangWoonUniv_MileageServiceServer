@@ -3,10 +3,10 @@ const contractAbi = require("../src/contractAbi.js"); // abi 불러오기
 const Web3 = require("web3");
 const mysql = require("mysql");
 
-const infuraKey = "a96fd49a742b4e60a94afc93459aac77"; // infura Api 키
+const infuraKey = process.env.INFURA_API_KEY; // infura Api 키
 const contractAddress = "0xb51019ff4814f171026d5f8f4a25b6423f846d0e"; // Contract 주소, Token 주소
 const contractOwnerAddress = "0xb912da07Ea6edfA6FFf168b5C2AE747D1A966BfC"; // Contract 생성자 주소
-const contractPrivateKey = "d6e488dc82d184661115053081da5815c224f0ef124b74a24f089e2fe7b9e49e"
+const contractPrivateKey = process.env.CONTRACT_PRIVATE_KEY
 
 const connection = mysql.createConnection({
   host: "127.0.0.1",
