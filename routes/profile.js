@@ -127,14 +127,16 @@ exports.getPhoto = async (req, res) => {
 };
 
 exports.getPhotos = async (req, res) => {
+  console.log(req.body)
   var sqlString = 'id=' + req.body.user1 + '||id=' + req.body.user2 + '||id=' + req.body.user3 + '||id=' + req.body.user4 + '||id=' + req.body.user5;
-  console.log("getting photos...");
+  console.log(sqlString)
   connection.query(
-    'select id,filename from project_data.userphoto where ?', sqlString,
+    `select id,filename from project_data.user_photo where ${sqlString}`,
     function (err, results) {
       if (err) {
         console.log(err);
       } else {
+        console.log(results)
         res.send({ photos: results });
       }
     }
