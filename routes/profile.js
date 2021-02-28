@@ -110,7 +110,7 @@ exports.getPhoto = async (req, res) => {
   const _userId = req.body.userId;
 
   connection.query(
-    `select * from project_data.user_photo where id=?`,
+    `select id,filename from project_data.user_photo where id=?`,
     _userId,
     function (err, results) {
       if (err) {
@@ -127,15 +127,23 @@ exports.getPhoto = async (req, res) => {
 };
 
 exports.getPhotos = async (req, res) => {
-  var sqlString = 'id=' + req.body.user1 + '||id=' + req.body.user2 + '||id=' + req.body.user3 + '||id=' + req.body.user4 + '||id=' + req.body.user5;
-  console.log("getting photos...");
+  const _rank1 = req.body.user1;
+  const _rank2 = req.body.user2;
+  const _rank3 = req.body.user3;
+  const _rank4 = req.body.user4;
+  const _rank5 = req.body.user5;
+
   connection.query(
-    'select id,filename from project_data.userphoto where ?', sqlString,
+    `select id,filename from project_data.user_photo where id=?||id=?||id=?||id=?||id=?`, [_rank1, _rank2, _rank3, _rank4, _rank5],
     function (err, results) {
       if (err) {
         console.log(err);
       } else {
-        res.send({ photos: results });
+        if (results.length != 0) {
+          res.send({ photos: results });
+        } else {
+          res.send({ photos: false });
+        }
       }
     }
   );
