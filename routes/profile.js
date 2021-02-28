@@ -9,6 +9,7 @@ const connection = mysql.createConnection({
 const fs = require("fs");
 const path = require("path");
 
+// 프로필 관련
 exports.saveProfile = async (req, res) => {
   console.log("프로필 저장 실행");
   console.log(req.body);
@@ -84,6 +85,72 @@ exports.getProfileEtc = (req, res) => {
   );
 };
 
+// 지갑 내역 관련
+exports.saveSpecification = async (req, res) => {
+  const _specificationObj = req.body.specificationObj;
+  const _userId = req.session.passport.user;
+
+  connection.query(
+    "SELECT JSON_LENGTH(specification) FROM user_wallet WHERE id=?", // 내역 길이 알아오기
+    _userId,
+    function (err, length) {
+      if (err) {
+        res.send(err);
+      }
+      if (length != null) {
+        connection.query(
+          `UPDATE project_data.user_wallet SET specification=JSON_ARRAY_INSERT('specification','$[?]',JSON_OBJECT(?,JSON_OBJECT("date",?, "detail", ?, "amount",?))) WHERE id = ?`,
+          length,
+          length,
+          _specificationObj.date,
+          _specificationObj.detail,
+          _specificationObj.amount,
+          userId,
+          function (err, results) {
+            if (err) {
+              res.send(err);
+            }
+
+            res.send({});
+          }
+        );
+      } else {
+        connection.query(
+          `UPDATE project_data.user_wallet SET specification=JSON_ARRAY(JSON_OBJECT(0,JSON_OBJECT("data",?, "detail", ?, "amount",?))) WHERE id = ?`,
+          _specificationObj.date,
+          _specificationObj.detail,
+          _specificationObj.amount,
+          userId,
+          function (err, results) {
+            if (err) {
+              res.send(err);
+            }
+
+            res.send({});
+          }
+        );
+      }
+    }
+  );
+};
+
+exports.getSpecification = async (req, res) => {
+  const _userId = req.body.userId;
+
+  connection.query(
+    "SELECT specification FROM project_data.user_wallet WHERE id = ?",
+    _userId,
+    function (err, results) {
+      if (err) {
+        res.send(err);
+      }
+      console.log(results);
+
+      res.send(results[0].specification);
+    }
+  );
+};
+
 // 프로필 사진 관련
 exports.savePhoto = async (req, res) => {
   console.log(req.files.image[0]);
@@ -95,7 +162,7 @@ exports.savePhoto = async (req, res) => {
   const _path = req.files.image[0].path;
 
   connection.query(
-    `insert into project_data.user_photo(id,type,filename,path) value(?,?,?,?)`,
+    `INSERT INTO project_data.user_photo(id,type,filename,path) VALUE(?,?,?,?)`,
     [_userId, _type, _filename, _path],
     function (err, results) {
       if (err) {
@@ -110,7 +177,7 @@ exports.getPhoto = async (req, res) => {
   const _userId = req.body.userId;
 
   connection.query(
-    `select * from project_data.user_photo where id=?`,
+    `SELECT * FROM project_data.user_photo WHERE id=?`,
     _userId,
     function (err, results) {
       if (err) {
@@ -127,16 +194,26 @@ exports.getPhoto = async (req, res) => {
 };
 
 exports.getPhotos = async (req, res) => {
-  console.log(req.body)
-  var sqlString = 'id=' + req.body.user1 + '||id=' + req.body.user2 + '||id=' + req.body.user3 + '||id=' + req.body.user4 + '||id=' + req.body.user5;
-  console.log(sqlString)
+  console.log(req.body);
+  var sqlString =
+    "id=" +
+    req.body.user1 +
+    "||id=" +
+    req.body.user2 +
+    "||id=" +
+    req.body.user3 +
+    "||id=" +
+    req.body.user4 +
+    "||id=" +
+    req.body.user5;
+  console.log(sqlString);
   connection.query(
-    `select id,filename from project_data.user_photo where ${sqlString}`,
+    `SELECT id,filename FROM project_data.user_photo WHERE ${sqlString}`,
     function (err, results) {
       if (err) {
         console.log(err);
       } else {
-        console.log(results)
+        console.log(results);
         res.send({ photos: results });
       }
     }
@@ -151,7 +228,7 @@ exports.changePhoto = async (req, res) => {
 
   // 서버에서 사진 삭제
   connection.query(
-    `select * from project_data.user_photo where id=?`,
+    `SELECT * FROM project_data.user_photo WHERE id=?`,
     _userId,
     function (err, results) {
       if (err) {

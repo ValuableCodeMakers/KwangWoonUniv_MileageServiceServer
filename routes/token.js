@@ -2,11 +2,12 @@ const BigNumber = require("bignumber.js");
 const contractAbi = require("../src/contractAbi.js"); // abi 불러오기
 const Web3 = require("web3");
 const mysql = require("mysql");
+require('dotenv').config() // .env 사용
+
 const infuraKey = process.env.INFURA_API_KEY; // infura Api 키
-const contractAddress = "0xb51019ff4814f171026d5f8f4a25b6423f846d0e"; // Contract 주소, Token 주소
+const contractAddress = "0xAc2F343129BEA5d06b181905341873DB2915DDd9"; // Contract 주소, Token 주소
 const contractOwnerAddress = "0xb912da07Ea6edfA6FFf168b5C2AE747D1A966BfC"; // Contract 생성자 주소
 const contractPrivateKey = process.env.CONTRACT_PRIVATE_KEY
-
 
 const connection = mysql.createConnection({
   host: "127.0.0.1",
