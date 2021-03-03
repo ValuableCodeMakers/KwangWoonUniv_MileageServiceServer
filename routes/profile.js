@@ -135,7 +135,7 @@ exports.saveSpecification = async (req, res) => {
 };
 
 exports.getSpecification = async (req, res) => {
-  const _userId = req.body.userId;
+  const _userId = req.session.passport.user;
 
   connection.query(
     "SELECT specification FROM project_data.user_wallet WHERE id = ?",
