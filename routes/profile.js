@@ -194,7 +194,7 @@ exports.getPhoto = async (req, res) => {
 };
 
 exports.getPhotos = async (req, res) => {
-  console.log(req.body);
+  console.log("유저 사진 불러오기 ",req.body);
   var sqlString =
     "id=" +
     req.body.user1 +
@@ -206,7 +206,6 @@ exports.getPhotos = async (req, res) => {
     req.body.user4 +
     "||id=" +
     req.body.user5;
-  console.log(sqlString);
   connection.query(
     `SELECT id,filename FROM project_data.user_photo WHERE ${sqlString}`,
     function (err, results) {
