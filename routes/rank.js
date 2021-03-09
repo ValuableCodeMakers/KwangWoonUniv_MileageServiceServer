@@ -14,8 +14,6 @@ exports.getUsersRank = (req, res) => {
     from user_ranking;`,
     function (err, results) {
       if (err) console.log(err);
-      console.log(results);
-
       res.send({ Ranking: results });
     }
   );
