@@ -87,48 +87,30 @@ exports.getProfileEtc = (req, res) => {
 
 // 지갑 내역 관련
 exports.saveSpecification = async (req, res) => {
-  const _specificationObj = req.body.specificationObj;
+  const _specificationObj = req.body;
   const _userId = req.session.passport.user;
 
   connection.query(
-    "SELECT JSON_LENGTH(specification) FROM user_wallet WHERE id=?", // 내역 길이 알아오기
+    "SELECT JSON_LENGTH(specification) as length FROM user_wallet WHERE id=?", // 내역 길이 알아오기
     _userId,
-    function (err, length) {
-      if (err) {
-        res.send(err);
-      }
-      if (length != null) {
-        connection.query(
-          `UPDATE project_data.user_wallet SET specification=JSON_ARRAY_INSERT('specification','$[?]',JSON_OBJECT(?,JSON_OBJECT("date",?, "detail", ?, "amount",?))) WHERE id = ?`,
-          length,
-          length,
-          _specificationObj.date,
-          _specificationObj.detail,
-          _specificationObj.amount,
-          userId,
-          function (err, results) {
-            if (err) {
-              res.send(err);
-            }
+    function (err, result) {
+      const length = result[0].length;
+      const table = "`" + "specification" + "`";
 
-            res.send({});
-          }
-        );
+      if (length != 0) {
+        const sqlQuery = `UPDATE project_data.user_wallet SET specification=JSON_ARRAY_INSERT(${table},'$[${length}]',JSON_OBJECT('${length}',JSON_OBJECT('date','${_specificationObj.date.split('T')[0]}', 'detail', '${_specificationObj.detail}', 'amount','${_specificationObj.amount}'))) WHERE id = ${_userId}`;
+
+        connection.query(sqlQuery, function (err, results) {
+          if (err) console.log(err);
+          else res.send({ saveSpecification_result: true });
+        });
       } else {
-        connection.query(
-          `UPDATE project_data.user_wallet SET specification=JSON_ARRAY(JSON_OBJECT(0,JSON_OBJECT("data",?, "detail", ?, "amount",?))) WHERE id = ?`,
-          _specificationObj.date,
-          _specificationObj.detail,
-          _specificationObj.amount,
-          userId,
-          function (err, results) {
-            if (err) {
-              res.send(err);
-            }
+        const sqlQuery = `UPDATE project_data.user_wallet SET specification=JSON_ARRAY(JSON_OBJECT('0',JSON_OBJECT('data','${_specificationObj.date.split('T')[0]}', 'detail', '${_specificationObj.detail}', 'amount','${_specificationObj.amount}'))) WHERE id = ?`;
 
-            res.send({});
-          }
-        );
+        connection.query(sqlQuery, function (err, results) {
+          if (err) console.log(err);
+          else res.send({ saveSpecification_result: true });
+        });
       }
     }
   );
@@ -144,8 +126,6 @@ exports.getSpecification = async (req, res) => {
       if (err) {
         res.send(err);
       }
-      console.log(results);
-
       res.send(results[0].specification);
     }
   );
@@ -194,7 +174,7 @@ exports.getPhoto = async (req, res) => {
 };
 
 exports.getPhotos = async (req, res) => {
-  console.log("유저 사진 불러오기 ",req.body);
+  console.log("유저 사진 불러오기 ", req.body);
   var sqlString =
     "id=" +
     req.body.user1 +
