@@ -40,9 +40,11 @@ router.post("/saveProfile", profile.saveProfile);
 router.get("/getUserId", profile.getUserId);
 router.post("/getWalletAddress", profile.getWalletAddress);
 router.post("/getProfileEtc", profile.getProfileEtc);
+router.post("/changeProfile", profile.changeProfile);
 
 router.post("/saveSpecification", profile.saveSpecification);
 router.get("/getSpecification", profile.getSpecification);
+
 
 
 // 회원 정보 - 프로필 사진 설정

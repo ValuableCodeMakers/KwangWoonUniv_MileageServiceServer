@@ -85,6 +85,25 @@ exports.getProfileEtc = (req, res) => {
   );
 };
 
+exports.changeProfile = async (req, res) => {
+  const _userId = req.body.Id;
+  const _name = req.body.name;
+  const _nickname = req.body.nickname;
+  const _department = req.body.department;
+
+  connection.query(
+    `UPDATE project_data.user_data SET name=?, nickname=?, department=? WHERE id = ?`,
+    [_name, _nickname, _department, _userId],
+
+    function (err, result, fields) {
+      if (err) console.log(err);
+      else
+        console.log(_userId + "의 데이터 업데이트 완료")
+    }
+  );
+  ;
+}
+
 // 지갑 내역 관련
 exports.saveSpecification = async (req, res) => {
   const _specificationObj = req.body;
