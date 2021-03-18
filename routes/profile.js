@@ -133,6 +133,19 @@ exports.saveSpecification = async (req, res) => {
       }
     }
   );
+  connection.query(
+    "SELECT balance FROM project_data.user_ranking WHERE id=?", _userId,
+    function (err, result) {
+      if (err) console.log(err)
+      else {
+        const sqlQuery = `UPDATE project_data.user_ranking SET balance = balance+${_specificationObj.amount} WHERE id = ${_userId}`
+        connection.query(sqlQuery, function (err, results) {
+          if (err) console.log(err);
+        });
+      }
+
+    }
+  )
 };
 
 exports.getSpecification = async (req, res) => {
@@ -204,7 +217,17 @@ exports.getPhotos = async (req, res) => {
     "||id=" +
     req.body.user4 +
     "||id=" +
-    req.body.user5;
+    req.body.user5 +
+    "||id=" +
+    req.body.user6 +
+    "||id=" +
+    req.body.user7 +
+    "||id=" +
+    req.body.user8 +
+    "||id=" +
+    req.body.user9 +
+    "||id=" +
+    req.body.user10;
   connection.query(
     `SELECT id,filename FROM project_data.user_photo WHERE ${sqlString}`,
     function (err, results) {
