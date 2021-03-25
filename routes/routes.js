@@ -45,6 +45,8 @@ router.post("/changeProfile", profile.changeProfile);
 router.post("/saveSpecification", profile.saveSpecification);
 router.get("/getSpecification", profile.getSpecification);
 
+router.post("/saveHistory", profile.saveHistory);
+
 
 
 // 회원 정보 - 프로필 사진 설정

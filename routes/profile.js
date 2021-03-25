@@ -8,6 +8,7 @@ const connection = mysql.createConnection({
 });
 const fs = require("fs");
 const path = require("path");
+const { stringify } = require("querystring");
 
 // 프로필 관련
 exports.saveProfile = async (req, res) => {
@@ -124,7 +125,7 @@ exports.saveSpecification = async (req, res) => {
           else res.send({ saveSpecification_result: true });
         });
       } else {
-        const sqlQuery = `UPDATE project_data.user_wallet SET specification=JSON_ARRAY(JSON_OBJECT('0',JSON_OBJECT('data','${_specificationObj.date.split('T')[0]}', 'detail', '${_specificationObj.detail}', 'amount','${_specificationObj.amount}'))) WHERE id = ?`;
+        const sqlQuery = `UPDATE project_data.user_wallet SET specification=JSON_ARRAY(JSON_OBJECT('0',JSON_OBJECT('date','${_specificationObj.date.split('T')[0]}', 'detail', '${_specificationObj.detail}', 'amount','${_specificationObj.amount}'))) WHERE id = ?`;
 
         connection.query(sqlQuery, function (err, results) {
           if (err) console.log(err);
@@ -146,6 +147,86 @@ exports.saveSpecification = async (req, res) => {
 
     }
   )
+};
+
+exports.saveHistory = async (req, res) => {
+  var date = req.body.date.split('T')[0];
+  const _year = date.split('-')[0];
+  const _month = date.split('-')[1];
+  const _day = date.split('-')[2];
+  const _userId = req.session.passport.user;
+  const _amount = req.body.amount;
+
+  connection.query(
+    "SELECT JSON_LENGTH(history) as length FROM user_wallet WHERE id=?", // 내역 길이 알아오기
+    _userId,
+    function (err, result) {
+      const length = result[0].length;
+      const table = "`" + "history" + "`";
+      console.log(length);
+
+      if (length != null) {
+        connection.query(`SELECT history FROM user_wallet WHERE id = ${_userId}`, function (err, results) {
+          if (err) res.send(err);
+
+          sampleHistory = JSON.stringify(results).split('[')[2].split(']')[0].split(',')[0];  //날짜 판별을 위한 샘플 데이터
+          sampleHistory = sampleHistory.split('\\"')[5];
+
+          var sampleHistoryDate = sampleHistory.split('-');
+          if ((sampleHistoryDate[0] == _year) && (sampleHistoryDate[1] == _month) && (sampleHistoryDate[2] == _day)) {  // 데이터베이스 history에 저장되어있는 첫 데이터의 날짜가 오늘일때
+            connection.query(`UPDATE project_data.user_wallet SET history=JSON_ARRAY_INSERT(${table},'$[${length}]',JSON_OBJECT('${length}',JSON_OBJECT('date','${date}'))) WHERE id = ${_userId}`, function (err, results) {
+              if (err) res.send(err);
+              else {
+                if (length == '2') {  // 3번째 데이터를 넣기에 성공했을 때
+                  console.log("3번째 적립이네요!");
+                  const sqlQuery = `UPDATE project_data.user_ranking SET balance = balance+${_amount} WHERE id = ${_userId}`
+                  connection.query(sqlQuery, function (err, results) {  // 추가 토큰 지급
+                    if (err) console.log(err);
+                    else {
+                      console.log("3번째 건물 방문 이벤트 코인 지급!");
+                      res.send({ saveHistory_result: true });
+                    }
+                  });
+
+                  connection.query( // specification 업데이트
+                    "SELECT JSON_LENGTH(specification) as length FROM user_wallet WHERE id=?", // specification 내역 길이 알아오기
+                    _userId,
+                    function (err, result) {
+                      const length2 = result[0].length;
+                      const table2 = "`" + "specification" + "`";
+
+                      if (length2 != 0) {
+                        const sqlQuery = `UPDATE project_data.user_wallet SET specification=JSON_ARRAY_INSERT(${table2},'$[${length2}]',JSON_OBJECT('${length2}',JSON_OBJECT('date','${date}', 'detail', '건물방문 3회차', 'amount','${_amount}'))) WHERE id = ${_userId}`;
+
+                        connection.query(sqlQuery, function (err, results) {
+                          if (err) console.log(err);
+                        });
+                      } else {
+                        const sqlQuery = `UPDATE project_data.user_wallet SE차 specification=JSON_ARRAY(JSON_OBJECT('0',JSON_OBJECT('date','${date}', 'detail', '건물방문 3회차', 'amount','${_amount}'))) WHERE id = ?`;
+
+                        connection.query(sqlQuery, function (err, results) {
+                          if (err) console.log(err);
+                        });
+                      }
+                    }
+                  );
+                }
+              }
+            });
+          }
+          else {  // 데이터베이스 history에 저장되어있는 첫 데이터의 날짜가 오늘이 아닐때
+            connection.query(`UPDATE project_data.user_wallet SET history = JSON_ARRAY(JSON_OBJECT('0',JSON_OBJECT('date','${date}'))) WHERE id = ${_userId}`, function (err, results) {
+              if (err) res.send(err);
+            });
+          }
+        });
+      } else {  // history에 데이터를 처음 넣을 때
+        connection.query(`UPDATE project_data.user_wallet SET history = JSON_ARRAY(JSON_OBJECT('0',JSON_OBJECT('date','${date}'))) WHERE id = ${_userId}`, function (err, results) {
+          if (err) res.send(err);
+        });
+      }
+    }
+  );
 };
 
 exports.getSpecification = async (req, res) => {
