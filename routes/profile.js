@@ -108,15 +108,17 @@ exports.changeProfile = async (req, res) => {
 exports.saveSpecification = async (req, res) => {
   const _specificationObj = req.body;
   const _userId = req.session.passport.user;
+  console.log(_specificationObj)
 
   connection.query(
     "SELECT JSON_LENGTH(specification) as length FROM user_wallet WHERE id=?", // 내역 길이 알아오기
     _userId,
     function (err, result) {
       const length = result[0].length;
+
       const table = "`" + "specification" + "`";
 
-      if (length != 0) {
+      if (length != 0 || length != null) {
         const sqlQuery = `UPDATE project_data.user_wallet SET specification=JSON_ARRAY_INSERT(${table},'$[${length}]',JSON_OBJECT('${length}',JSON_OBJECT('date','${_specificationObj.date.split('T')[0]}', 'detail', '${_specificationObj.detail}', 'amount','${_specificationObj.amount}'))) WHERE id = ${_userId}`;
 
         connection.query(sqlQuery, function (err, results) {
@@ -124,7 +126,7 @@ exports.saveSpecification = async (req, res) => {
           else res.send({ saveSpecification_result: true });
         });
       } else {
-        const sqlQuery = `UPDATE project_data.user_wallet SET specification=JSON_ARRAY(JSON_OBJECT('0',JSON_OBJECT('data','${_specificationObj.date.split('T')[0]}', 'detail', '${_specificationObj.detail}', 'amount','${_specificationObj.amount}'))) WHERE id = ?`;
+        const sqlQuery = `UPDATE project_data.user_wallet SET specification=JSON_ARRAY(JSON_OBJECT('0',JSON_OBJECT('data','${_specificationObj.date.split('T')[0]}', 'detail', '${_specificationObj.detail}', 'amount','${_specificationObj.amount}'))) WHERE id = ${_userId}`;
 
         connection.query(sqlQuery, function (err, results) {
           if (err) console.log(err);
@@ -133,6 +135,7 @@ exports.saveSpecification = async (req, res) => {
       }
     }
   );
+  
   connection.query(
     "SELECT balance FROM project_data.user_ranking WHERE id=?", _userId,
     function (err, result) {
