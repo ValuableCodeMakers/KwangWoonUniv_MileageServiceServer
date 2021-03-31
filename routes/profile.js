@@ -244,6 +244,25 @@ exports.getSpecification = async (req, res) => {
   );
 };
 
+exports.getBuildingVisitCount = async (req, res) => {
+  const _userId = req.session.passport.user;
+
+  connection.query(
+    "SELECT JSON_LENGTH(history) as length FROM user_wallet WHERE id=?", // 내역 길이 알아오기
+    _userId,
+    function (err, result) {
+      const length = result[0].length;
+      if (err) {
+        res.send(err);
+      }
+      else {
+        console.log("length: " + length);
+        res.send({ length: length });
+      }
+    }
+  );
+};
+
 // 프로필 사진 관련
 exports.savePhoto = async (req, res) => {
   console.log(req.files.image[0]);

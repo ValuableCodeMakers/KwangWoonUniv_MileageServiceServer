@@ -46,6 +46,7 @@ router.post("/saveSpecification", profile.saveSpecification);
 router.get("/getSpecification", profile.getSpecification);
 
 router.post("/saveHistory", profile.saveHistory);
+router.post("/getBuildingVisitCount", profile.getBuildingVisitCount);
 
 
 
