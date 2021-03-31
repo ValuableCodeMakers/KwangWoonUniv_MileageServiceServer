@@ -8,7 +8,6 @@ const connection = mysql.createConnection({
 });
 const fs = require("fs");
 const path = require("path");
-const { stringify } = require("querystring");
 
 // 프로필 관련
 exports.saveProfile = async (req, res) => {
