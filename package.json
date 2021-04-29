@@ -23,7 +23,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "nodemon --watch routes --watch root root/server.js",
+    "start": "nodemon --watch root --watch routes root/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
