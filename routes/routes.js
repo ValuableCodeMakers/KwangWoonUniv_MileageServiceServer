@@ -48,8 +48,6 @@ router.get("/getSpecification", profile.getSpecification);
 router.post("/saveHistory", profile.saveHistory);
 router.post("/getBuildingVisitCount", profile.getBuildingVisitCount);
 
-
-
 // 회원 정보 - 프로필 사진 설정
 router.post(
   "/savePhoto",
