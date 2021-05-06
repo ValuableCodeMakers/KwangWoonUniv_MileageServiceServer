@@ -8,6 +8,8 @@ const passportConfigure = require('../routes/passport/session.js');
 
 const app = express();
 
+passportConfigure();
+
 app.use(cors());
 app.use(
   express.urlencoded({
@@ -16,10 +18,11 @@ app.use(
 );
 app.use(express.json());
 app.use(express.static('profiles'))
+
 app.use(
   session({
     secret: "ABCD1234ABAB!@",
-    resave: true,
+    resave: false,
     saveUninitialized: true,
     store: new MySQLStore({
       host: "127.0.0.1",
@@ -33,7 +36,6 @@ app.use(
 app.use(passport.initialize()); // passport 사용
 app.use(passport.session()); // passport 사용시 session 활용
 
-passportConfigure();
 
 app.use("/routes", routes)
 

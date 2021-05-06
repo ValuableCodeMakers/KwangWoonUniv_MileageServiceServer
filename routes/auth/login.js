@@ -1,27 +1,31 @@
 const passport = require("passport");
 
-exports.login = function (req, res, next) {
+exports.login = async function (req, res, next) {
   console.log("로그인 실행!");
 
-  passport.authenticate("local", (err, userInfo, info) => {
+  await passport.authenticate("local", (err, userInfo, info) => {
     console.log("authenticate callback");
+
     let user = userInfo.user;
 
     if (err) {
       console.log("authenticate callback Fail!");
-      res.send("로그인 실패");
-    }
-
-    if (!user) {
-      console.log("authenticate callback Fail!");
       res.send({
         result: false,
       });
-    } else if (user) {
-      console.log("authenticate callback Success!");
-      console.log(userInfo)
+    }
+    if (!user){
+      console.log(info.message)
+      res.send({
+        result: false,
+      });
+    }
 
-      if (user.name == null || user.name == false || user.name == "") {
+
+    if (user) {
+      console.log("authenticate callback Success!");
+
+      if (user.name == null || user.name == "") {
         console.log("새로운 유저");
 
         return req.login(user, function (err) {

@@ -1,82 +1,78 @@
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
-const mysql = require("mysql");
 const bkfd2Password = require("pbkdf2-password");
+const mysqlConnection = require("../modules/mysql.js");
 
-const connection = mysql.createConnection({
-  host: "127.0.0.1",
-  post: 3306,
-  user: "root",
-  password: "123456",
-  database: "project_data",
-});
+const connection = mysqlConnection.connection;
+
 var hasher = bkfd2Password();
 
-module.exports = passport.use(
-  "local",
-  new LocalStrategy(
-    {
-      usernameField: "id",
-      passwordField: "password",
-      passReqToCallback: true, // 첫번째 파라미터로 req 전달
-    },
-    function (req, id, password, done) {
-      console.log("[LocalStrategy] 실행", id, password);
+module.exports = () =>
+  passport.use(
+    "local",
+    new LocalStrategy(
+      {
+        usernameField: "id",
+        passwordField: "password",
+        passReqToCallback: false, // 첫번째 파라미터로 req 전달
+      },
+      function (id, password, done) {
+        console.log("[LocalStrategy] 실행", id, password);
+        try {
+          connection.query(
+            `SELECT * FROM project_data.user_data WHERE id = ?`,
+            id,
+            function (err, results) {
+              if (err) return done(err);
+              if (!results[0]) {
+                console.log("회원정보(아이디)가 없습니다.");
+                return done(null, false, {
+                  message: "회원정보(아이디)가 없습니다.",
+                });
+              }
 
-      connection.query(
-        `select * from project_data.user_data where id = ?`,
-        id,
-        function (err, results) {
-          if (err) return done(err);
-          console.log("user data in DB", results);
-          if (!results[0]) {
-            console.log("DB에 회원정보(아이디)가 없습니다.");
-            return done(err);
-          }
+              let user = results[0];
+              return hasher(
+                { password: password, salt: user.user_salt },
+                function (err, pass, salt, hash) {
+                  if (hash === user.password) {
+                    // 사용자의 비밀번호가 올바른지 확인
+                    let userWalletAddress;
 
-          let user = results[0];
-          return hasher(
-            { password: password, salt: user.user_salt },
-            function (err, pass, salt, hash) {
-              if (hash === user.password) {
-                // 사용자의 비밀번호가 올바른지 확인
-                let userWalletAddress;
-                connection.query(
-                  `select address from project_data.user_wallet where id = ?`,
-                  user.id,
-                  function (err, results) {
-                    if (err) return done(err);
-                    console.log("walletId in DB", results[0]);
+                    connection.query(
+                      `SELECT address FROM project_data.user_wallet WHERE id = ?`,
+                      user.id,
+                      function (err, results) {
+                        if (err) return done(err);
 
-                    if (results[0] == undefined) {
-                      userWalletAddress =""
-                    } else {
-                      userWalletAddress = results[0].address;
-                    }
-                    const userInfo = {
-                      user: user,
-                      walletAddress: userWalletAddress,
-                    };
+                        // 유저 지갑 존재 유무 확인
+                        if (results[0] == undefined) {
+                          userWalletAddress = "";
+                        } else {
+                          userWalletAddress = results[0].address;
+                        }
 
-                    console.log("Session data", userInfo);
-                    done(null, userInfo); // userInfo 라는 값을 passport.serializeUser의 첫번째 인자로 전송
-                  }
-                );
+                        const userInfo = {
+                          user: user,
+                          walletAddress: userWalletAddress,
+                        };
 
-                // connection.query(
-                //   `select department from project_data.user_data where id = ?`,
-                //   id,
-                //   function (err, result, fields) {
-                //     if (err) console.log(err);
-                //     else {
-                //     }
-                //   }
-                // );
-              } else done(null, false);
+                        console.log("Session data", userInfo);
+                        done(null, userInfo); // userInfo 라는 값을 passport.serializeUser의 첫번째 인자로 전송
+                      }
+                    );
+                  } else
+                    done(null, false, {
+                      message: "비밀번호가 틀렸습니다.",
+                    });
+                }
+              );
             }
           );
+        } catch (err) {
+          console.error(err);
+          done(err);
         }
-      );
-    }
-  )
-);
+      }
+    )
+  );

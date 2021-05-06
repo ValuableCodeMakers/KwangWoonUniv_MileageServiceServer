@@ -1,21 +1,15 @@
 const BigNumber = require("bignumber.js");
 const contractAbi = require("../src/contractAbi.js"); // abi 불러오기
 const Web3 = require("web3");
-const mysql = require("mysql");
-require('dotenv').config() // .env 사용
+const mysqlConnection = require("./modules/mysql.js");
+require("dotenv").config(); // .env 사용
 
 const infuraKey = process.env.INFURA_API_KEY; // infura Api 키
 const contractAddress = process.env.CONTRACT_ADDRESS; // Contract 주소, Token 주소
 const contractOwnerAddress = process.env.CONTRACT_OWNER_ADDRESS; // Contract 생성자 주소
-const contractPrivateKey = process.env.CONTRACT_PRIVATE_KEY
+const contractPrivateKey = process.env.CONTRACT_PRIVATE_KEY; // Contract Private Key
 
-const connection = mysql.createConnection({
-  host: "127.0.0.1",
-  post: 3306,
-  user: "root",
-  password: "123456",
-  database: "project_data",
-});
+const connection = mysqlConnection.connection;
 
 // 지갑의 토큰 개수
 exports.getTokenBalance = async (req, res) => {
@@ -81,7 +75,9 @@ exports.getEventToken = async (req, res) => {
 
                 // 16진법으로 Convert
                 var _hex_gasPrice = web3.utils.toHex(_gasPrice.toString());
-                var _hex_value = web3.utils.toHex(new BigNumber(amount.toString()));
+                var _hex_value = web3.utils.toHex(
+                  new BigNumber(amount.toString())
+                );
                 var _hex_Gas = web3.utils.toHex("60000");
 
                 // main wallet에서 보내기
@@ -112,6 +108,7 @@ exports.getEventToken = async (req, res) => {
                       function (err, hash) {
                         if (err) {
                           console.log(err);
+                          res.send({ txhash: false });
                         } else {
                           console.log("transaction hash", hash);
                           res.send({ txhash: hash });
@@ -121,15 +118,18 @@ exports.getEventToken = async (req, res) => {
                   });
               } catch (error) {
                 console.log(error);
+                res.send({ txhash: false });
               }
             });
           } catch (error) {
             console.log(error);
+            res.send({ txhash: false });
           }
         });
     });
   } catch (error) {
     console.log(error);
+    res.send({ txhash: false });
   }
 };
 
@@ -197,7 +197,9 @@ exports.transferToken = async (req, res) => {
                 );
                 // 16진법으로 Convert
                 var _hex_gasPrice = web3.utils.toHex(_gasPrice.toString());
-                var _hex_value = web3.utils.toHex(new BigNumber(amount.toString()));
+                var _hex_value = web3.utils.toHex(
+                  new BigNumber(amount.toString())
+                );
                 var _hex_Gas = web3.utils.toHex("60000");
 
                 console.log("16진법 Converting 완료");
