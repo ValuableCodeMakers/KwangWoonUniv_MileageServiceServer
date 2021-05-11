@@ -14,8 +14,8 @@ const upload = multer({
     },
   }),
 });
-const token = require("./token.js");
-const wallet = require("./wallet.js");
+const token = require("./blockchain/token.js");
+const wallet = require("./blockchain/wallet.js");
 const register = require("./auth/register.js");
 const login = require("./auth/login.js");
 const logout = require("./auth/logout.js");

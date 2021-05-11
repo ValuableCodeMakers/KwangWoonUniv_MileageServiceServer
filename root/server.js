@@ -23,7 +23,7 @@ app.use(
   session({
     secret: "ABCD1234ABAB!@",
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     store: new MySQLStore({
       host: "127.0.0.1",
       post: 3306,
