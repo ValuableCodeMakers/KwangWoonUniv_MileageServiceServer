@@ -1,7 +1,7 @@
 const BigNumber = require("bignumber.js");
-const contractAbi = require("../src/contractAbi.js"); // abi 불러오기
+const contractAbi = require("../../src/contractAbi.js"); // abi 불러오기
 const Web3 = require("web3");
-const mysqlConnection = require("./modules/mysql.js");
+const mysqlConnection = require("../modules/mysql.js");
 require("dotenv").config(); // .env 사용
 
 const infuraKey = process.env.INFURA_API_KEY; // infura Api 키
@@ -28,7 +28,6 @@ exports.getTokenBalance = async (req, res) => {
 
 // 이벤트 발생시 토큰 전송
 exports.getEventToken = async (req, res) => {
-  console.log("이벤트 토큰 전송", req.body);
   const to = req.body.to;
 
   let fromPrivateKey = contractPrivateKey;
@@ -135,8 +134,6 @@ exports.getEventToken = async (req, res) => {
 
 // 상대에게 토큰 전송
 exports.transferToken = async (req, res) => {
-  console.log(req.body);
-
   const from = req.body.from;
   const to = req.body.to;
   const value = req.body.value;

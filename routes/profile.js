@@ -5,8 +5,12 @@ const mysqlConnection = require("./modules/mysql.js");
 const connection = mysqlConnection.connection;
 
 exports.getUserId = async (req, res) => {
-  const _userId = req.session.passport.user;
-  res.send({ userId: _userId });
+  try {
+    const _userId = req.session.passport.user;
+    res.send({ userId: _userId });
+  } catch {
+    res.send({ userId: null });
+  }
 };
 
 exports.getWalletAddress = (req, res) => {
@@ -23,12 +27,8 @@ exports.getWalletAddress = (req, res) => {
   );
 };
 
-
 // 프로필 관련
 exports.saveProfile = async (req, res) => {
-  console.log("프로필 저장 실행");
-  console.log(req.body);
-
   const _name = req.body["name"];
   const _nickname = req.body["nickname"];
   const _department = req.body["department"];
@@ -165,8 +165,8 @@ exports.getSpecification = async (req, res) => {
         res.send(results[0].specification);
       }
     );
-  } catch(err) {
-    console.log(err)
+  } catch (err) {
+    console.log(err);
     res.send([]);
   }
 };
@@ -417,5 +417,3 @@ exports.getPhotos = async (req, res) => {
     }
   );
 };
-
-

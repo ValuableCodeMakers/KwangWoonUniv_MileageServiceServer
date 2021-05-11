@@ -6,13 +6,8 @@ const connection = mysqlConnection.connection;
 var hasher = bkfd2Password();
 
 exports.register = async (req, res) => {
-  console.log("회원가입 실행");
-  console.log(req.body);
-
   var _id = req.body["id"];
   var _password = req.body["password"];
-
-  console.log(_id, _password);
 
   await hasher({ password: _password }, function (err, pass, salt, hash) {
     connection.query(
