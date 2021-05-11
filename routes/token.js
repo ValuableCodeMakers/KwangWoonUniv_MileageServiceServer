@@ -17,7 +17,6 @@ exports.getTokenBalance = async (req, res) => {
     new Web3.providers.HttpProvider(`https://ropsten.infura.io/v3/${infuraKey}`)
   );
   let contractInstance = new web3.eth.Contract(contractAbi, contractAddress);
-
   contractInstance.methods
     .balanceOf(req.body.address) // 사용자 지갑 주소
     .call()

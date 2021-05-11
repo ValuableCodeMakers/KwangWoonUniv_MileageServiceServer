@@ -112,22 +112,18 @@ exports.saveSpecification = async (req, res) => {
       const table = "`" + "specification" + "`";
 
       if (length != 0 || length != null) {
-        const sqlQuery = `UPDATE project_data.user_wallet SET specification=JSON_ARRAY_INSERT(${table},'$[${length}]',JSON_OBJECT('${length}',JSON_OBJECT('date','${
-          _specificationObj.date.split("T")[0]
-        }', 'detail', '${_specificationObj.detail}', 'amount','${
-          _specificationObj.amount
-        }'))) WHERE id = ${_userId}`;
+        const sqlQuery = `UPDATE project_data.user_wallet SET specification=JSON_ARRAY_INSERT(${table},'$[${length}]',JSON_OBJECT('${length}',JSON_OBJECT('date','${_specificationObj.date.split("T")[0]
+          }', 'detail', '${_specificationObj.detail}', 'amount','${_specificationObj.amount
+          }'))) WHERE id = ${_userId}`;
 
         connection.query(sqlQuery, function (err, results) {
           if (err) console.log(err);
           else res.send({ saveSpecification_result: true });
         });
       } else {
-        const sqlQuery = `UPDATE project_data.user_wallet SET specification=JSON_ARRAY(JSON_OBJECT('0',JSON_OBJECT('data','${
-          _specificationObj.date.split("T")[0]
-        }', 'detail', '${_specificationObj.detail}', 'amount','${
-          _specificationObj.amount
-        }'))) WHERE id = ${_userId}`;
+        const sqlQuery = `UPDATE project_data.user_wallet SET specification=JSON_ARRAY(JSON_OBJECT('0',JSON_OBJECT('data','${_specificationObj.date.split("T")[0]
+          }', 'detail', '${_specificationObj.detail}', 'amount','${_specificationObj.amount
+          }'))) WHERE id = ${_userId}`;
 
         connection.query(sqlQuery, function (err, results) {
           if (err) console.log(err);
@@ -165,7 +161,7 @@ exports.getSpecification = async (req, res) => {
         res.send(results[0].specification);
       }
     );
-  } catch(err) {
+  } catch (err) {
     console.log(err)
     res.send([]);
   }
@@ -223,6 +219,7 @@ exports.saveHistory = async (req, res) => {
                         }
                       });
 
+                      /*
                       connection.query(
                         // specification 업데이트
                         "SELECT JSON_LENGTH(specification) as length FROM user_wallet WHERE id=?", // specification 내역 길이 알아오기
@@ -245,6 +242,11 @@ exports.saveHistory = async (req, res) => {
                             });
                           }
                         }
+                      );
+                      */
+                      connection.query(`UPDATE project_data.user_wallet SET history = NULL WHERE id = ${_userId}`, function (err, results) {  //3회차 방문시 히스토리 초기화
+                        if (err) console.log(err);
+                      }
                       );
                     }
                   }
@@ -417,5 +419,3 @@ exports.getPhotos = async (req, res) => {
     }
   );
 };
-
-
