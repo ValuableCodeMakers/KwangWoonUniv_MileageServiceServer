@@ -1,2 +1,4 @@
 node_modules
+
 root/profiles
+root/.env
