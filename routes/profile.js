@@ -16,7 +16,7 @@ exports.getUserId = async (req, res) => {
 exports.getWalletAddress = (req, res) => {
   const _userId = req.body.userId;
   connection.query(
-    `SELECT address FROM project_data.user_wallet WHERE id = ?`,
+    `SELECT address FROM KW_project_database.user_wallet WHERE id = ?`,
     _userId,
     function (err, results) {
       if (err) return done(err);
@@ -39,7 +39,7 @@ exports.saveProfile = async (req, res) => {
   const _curId = req.session.passport.user;
 
   connection.query(
-    `UPDATE project_data.user_data SET name=?, nickname=?, department=? WHERE id = ?`,
+    `UPDATE KW_project_database.user_data SET name=?, nickname=?, department=? WHERE id = ?`,
     [_name, _nickname, _department, _curId],
 
     function (err, result, fields) {
@@ -48,7 +48,7 @@ exports.saveProfile = async (req, res) => {
   );
 
   connection.query(
-    `INSERT INTO project_data.user_wallet(id,mnemonic,address,privateKey) VALUE(?,?,?,?)`,
+    `INSERT INTO KW_project_database.user_wallet(id,mnemonic,address,privateKey) VALUE(?,?,?,?)`,
     [_curId, _mnemonic, _address, _privateKey],
 
     function (err, result, fields) {
@@ -61,7 +61,7 @@ exports.saveProfile = async (req, res) => {
 exports.getProfileEtc = (req, res) => {
   const _userId = req.body.userId;
   connection.query(
-    "SELECT name,nickname,department FROM project_data.user_data WHERE id = ?",
+    "SELECT name,nickname,department FROM KW_project_database.user_data WHERE id = ?",
     _userId,
     function (err, results) {
       if (err) {
@@ -88,7 +88,7 @@ exports.changeProfile = async (req, res) => {
   const _department = req.body.department;
 
   connection.query(
-    `UPDATE project_data.user_data SET name=?, nickname=?, department=? WHERE id = ?`,
+    `UPDATE KW_project_database.user_data SET name=?, nickname=?, department=? WHERE id = ?`,
     [_name, _nickname, _department, _userId],
 
     function (err, result, fields) {
@@ -112,7 +112,7 @@ exports.saveSpecification = async (req, res) => {
       const table = "`" + "specification" + "`";
 
       if (length != 0 || length != null) {
-        const sqlQuery = `UPDATE project_data.user_wallet SET specification=JSON_ARRAY_INSERT(${table},'$[${length}]',JSON_OBJECT('${length}',JSON_OBJECT('date','${_specificationObj.date.split("T")[0]
+        const sqlQuery = `UPDATE KW_project_database.user_wallet SET specification=JSON_ARRAY_INSERT(${table},'$[${length}]',JSON_OBJECT('${length}',JSON_OBJECT('date','${_specificationObj.date.split("T")[0]
           }', 'detail', '${_specificationObj.detail}', 'amount','${_specificationObj.amount
           }'))) WHERE id = ${_userId}`;
 
@@ -121,7 +121,7 @@ exports.saveSpecification = async (req, res) => {
           else res.send({ saveSpecification_result: true });
         });
       } else {
-        const sqlQuery = `UPDATE project_data.user_wallet SET specification=JSON_ARRAY(JSON_OBJECT('0',JSON_OBJECT('data','${_specificationObj.date.split("T")[0]
+        const sqlQuery = `UPDATE KW_project_database.user_wallet SET specification=JSON_ARRAY(JSON_OBJECT('0',JSON_OBJECT('data','${_specificationObj.date.split("T")[0]
           }', 'detail', '${_specificationObj.detail}', 'amount','${_specificationObj.amount
           }'))) WHERE id = ${_userId}`;
 
@@ -134,12 +134,12 @@ exports.saveSpecification = async (req, res) => {
   );
 
   connection.query(
-    "SELECT balance FROM project_data.user_ranking WHERE id=?",
+    "SELECT balance FROM KW_project_database.user_ranking WHERE id=?",
     _userId,
     function (err, result) {
       if (err) console.log(err);
       else {
-        const sqlQuery = `UPDATE project_data.user_ranking SET balance = balance+${_specificationObj.amount} WHERE id = ${_userId}`;
+        const sqlQuery = `UPDATE KW_project_database.user_ranking SET balance = balance+${_specificationObj.amount} WHERE id = ${_userId}`;
         connection.query(sqlQuery, function (err, results) {
           if (err) console.log(err);
         });
@@ -152,7 +152,7 @@ exports.getSpecification = async (req, res) => {
   try {
     const _userId = req.session.passport.user;
     connection.query(
-      "SELECT specification FROM project_data.user_wallet WHERE id = ?",
+      "SELECT specification FROM KW_project_database.user_wallet WHERE id = ?",
       _userId,
       function (err, results) {
         if (err) {
@@ -202,14 +202,14 @@ exports.saveHistory = async (req, res) => {
             ) {
               // 데이터베이스 history에 저장되어있는 첫 데이터의 날짜가 오늘일때
               connection.query(
-                `UPDATE project_data.user_wallet SET history=JSON_ARRAY_INSERT(${table},'$[${length}]',JSON_OBJECT('${length}',JSON_OBJECT('date','${date}'))) WHERE id = ${_userId}`,
+                `UPDATE KW_project_database.user_wallet SET history=JSON_ARRAY_INSERT(${table},'$[${length}]',JSON_OBJECT('${length}',JSON_OBJECT('date','${date}'))) WHERE id = ${_userId}`,
                 function (err, results) {
                   if (err) res.send(err);
                   else {
                     if (length == "2") {
                       // 3번째 데이터를 넣기에 성공했을 때
                       console.log("3번째 적립이네요!");
-                      const sqlQuery = `UPDATE project_data.user_ranking SET balance = balance+${_amount} WHERE id = ${_userId}`;
+                      const sqlQuery = `UPDATE KW_project_database.user_ranking SET balance = balance+${_amount} WHERE id = ${_userId}`;
                       connection.query(sqlQuery, function (err, results) {
                         // 추가 토큰 지급
                         if (err) console.log(err);
@@ -229,13 +229,13 @@ exports.saveHistory = async (req, res) => {
                           const table2 = "`" + "specification" + "`";
 
                           if (length2 != 0) {
-                            const sqlQuery = `UPDATE project_data.user_wallet SET specification=JSON_ARRAY_INSERT(${table2},'$[${length2}]',JSON_OBJECT('${length2}',JSON_OBJECT('date','${date}', 'detail', '건물방문 3회차', 'amount','${_amount}'))) WHERE id = ${_userId}`;
+                            const sqlQuery = `UPDATE KW_project_database.user_wallet SET specification=JSON_ARRAY_INSERT(${table2},'$[${length2}]',JSON_OBJECT('${length2}',JSON_OBJECT('date','${date}', 'detail', '건물방문 3회차', 'amount','${_amount}'))) WHERE id = ${_userId}`;
 
                             connection.query(sqlQuery, function (err, results) {
                               if (err) console.log(err);
                             });
                           } else {
-                            const sqlQuery = `UPDATE project_data.user_wallet SE차 specification=JSON_ARRAY(JSON_OBJECT('0',JSON_OBJECT('date','${date}', 'detail', '건물방문 3회차', 'amount','${_amount}'))) WHERE id = ?`;
+                            const sqlQuery = `UPDATE KW_project_database.user_wallet SE차 specification=JSON_ARRAY(JSON_OBJECT('0',JSON_OBJECT('date','${date}', 'detail', '건물방문 3회차', 'amount','${_amount}'))) WHERE id = ?`;
 
                             connection.query(sqlQuery, function (err, results) {
                               if (err) console.log(err);
@@ -244,7 +244,7 @@ exports.saveHistory = async (req, res) => {
                         }
                       );
                       */
-                      connection.query(`UPDATE project_data.user_wallet SET history = NULL WHERE id = ${_userId}`, function (err, results) {  //3회차 방문시 히스토리 초기화
+                      connection.query(`UPDATE KW_project_database.user_wallet SET history = NULL WHERE id = ${_userId}`, function (err, results) {  //3회차 방문시 히스토리 초기화
                         if (err) console.log(err);
                       }
                       );
@@ -255,7 +255,7 @@ exports.saveHistory = async (req, res) => {
             } else {
               // 데이터베이스 history에 저장되어있는 첫 데이터의 날짜가 오늘이 아닐때
               connection.query(
-                `UPDATE project_data.user_wallet SET history = JSON_ARRAY(JSON_OBJECT('0',JSON_OBJECT('date','${date}'))) WHERE id = ${_userId}`,
+                `UPDATE KW_project_database.user_wallet SET history = JSON_ARRAY(JSON_OBJECT('0',JSON_OBJECT('date','${date}'))) WHERE id = ${_userId}`,
                 function (err, results) {
                   if (err) res.send(err);
                 }
@@ -266,7 +266,7 @@ exports.saveHistory = async (req, res) => {
       } else {
         // history에 데이터를 처음 넣을 때
         connection.query(
-          `UPDATE project_data.user_wallet SET history = JSON_ARRAY(JSON_OBJECT('0',JSON_OBJECT('date','${date}'))) WHERE id = ${_userId}`,
+          `UPDATE KW_project_database.user_wallet SET history = JSON_ARRAY(JSON_OBJECT('0',JSON_OBJECT('date','${date}'))) WHERE id = ${_userId}`,
           function (err, results) {
             if (err) res.send(err);
           }
@@ -309,7 +309,7 @@ exports.savePhoto = async (req, res) => {
   const _path = req.files.image[0].path;
 
   connection.query(
-    `INSERT INTO project_data.user_photo(id,type,filename,path) VALUE(?,?,?,?)`,
+    `INSERT INTO KW_project_database.user_photo(id,type,filename,path) VALUE(?,?,?,?)`,
     [_userId, _type, _filename, _path],
     function (err, results) {
       if (err) {
@@ -328,7 +328,7 @@ exports.changePhoto = async (req, res) => {
 
   // 서버에서 사진 삭제
   connection.query(
-    `SELECT * FROM project_data.user_photo WHERE id=?`,
+    `SELECT * FROM KW_project_database.user_photo WHERE id=?`,
     _userId,
     function (err, results) {
       if (err) {
@@ -351,7 +351,7 @@ exports.changePhoto = async (req, res) => {
 
         // DB에 사진 정보 덮어쓰기
         connection.query(
-          `INSERT INTO project_data.user_photo SET id=?,type=?,filename=?,path=? ON DUPLICATE KEY UPDATE type=?,filename=?,path=?`,
+          `INSERT INTO KW_project_database.user_photo SET id=?,type=?,filename=?,path=? ON DUPLICATE KEY UPDATE type=?,filename=?,path=?`,
           [_userId, _type, _filename, _path, _type, _filename, _path],
           function (err, results) {
             if (err) {
@@ -369,7 +369,7 @@ exports.getPhoto = async (req, res) => {
   const _userId = req.body.userId;
 
   connection.query(
-    `SELECT * FROM project_data.user_photo WHERE id=?`,
+    `SELECT * FROM KW_project_database.user_photo WHERE id=?`,
     _userId,
     function (err, results) {
       if (err) {
@@ -409,7 +409,7 @@ exports.getPhotos = async (req, res) => {
     req.body.user10;
 
   connection.query(
-    `SELECT id,filename FROM project_data.user_photo WHERE ${sqlString}`,
+    `SELECT id,filename FROM KW_project_database.user_photo WHERE ${sqlString}`,
     function (err, results) {
       if (err) {
         console.log(err);

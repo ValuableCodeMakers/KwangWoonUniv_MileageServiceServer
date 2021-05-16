@@ -5,5 +5,5 @@ exports.connection = mysql.createConnection({
   post: 3306,
   user: "admin",
   password: "kwprojectdatabase",
-  database: "KW_project_database",
+  database: "KW_KW_project_databasebase",
 });

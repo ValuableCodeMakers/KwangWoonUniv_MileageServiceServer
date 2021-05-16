@@ -20,7 +20,7 @@ module.exports = () =>
         console.log("[LocalStrategy] 실행", id, password);
         try {
           connection.query(
-            `SELECT * FROM project_data.user_data WHERE id = ?`,
+            `SELECT * FROM KW_project_database.user_data WHERE id = ?`,
             id,
             function (err, results) {
               if (err) return done(err);
@@ -40,7 +40,7 @@ module.exports = () =>
                     let userWalletAddress;
 
                     connection.query(
-                      `SELECT address FROM project_data.user_wallet WHERE id = ?`,
+                      `SELECT address FROM KW_project_database.user_wallet WHERE id = ?`,
                       user.id,
                       function (err, results) {
                         if (err) return done(err);

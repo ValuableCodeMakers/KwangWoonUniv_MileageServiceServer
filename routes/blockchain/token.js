@@ -160,7 +160,7 @@ exports.transferToken = async (req, res) => {
         .call()
         .then((result) => {
           connection.query(
-            `select privateKey from project_data.user_wallet where id = ?`,
+            `select privateKey from KW_project_database.user_wallet where id = ?`,
             req.body.id,
             function (err, results) {
               console.log(results);
