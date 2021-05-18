@@ -14,13 +14,16 @@ const upload = multer({
     },
   }),
 });
+
 const token = require("./blockchain/token.js");
 const wallet = require("./blockchain/wallet.js");
 const register = require("./auth/register.js");
 const login = require("./auth/login.js");
 const logout = require("./auth/logout.js");
-const profile = require("./profile.js");
-const rank = require("./rank.js");
+const profile = require("./main/profile.js");
+const photo = require("./main/photo");
+const specification = require("./main/specification");
+const rank = require("./main/rank.js");
 
 // 스마트 컨트랙트, 토큰 관련
 router.post("/getTokenBalance", token.getTokenBalance);
@@ -42,24 +45,25 @@ router.post("/getWalletAddress", profile.getWalletAddress);
 router.post("/getProfileEtc", profile.getProfileEtc);
 router.post("/changeProfile", profile.changeProfile);
 
-router.post("/saveSpecification", profile.saveSpecification);
-router.get("/getSpecification", profile.getSpecification);
-
 router.post("/saveHistory", profile.saveHistory);
 router.post("/getBuildingVisitCount", profile.getBuildingVisitCount);
+
+// 회원 정보 - 지갑 내역
+router.post("/saveSpecification", specification.saveSpecification);
+router.get("/getSpecification", specification.getSpecification);
 
 // 회원 정보 - 프로필 사진 설정
 router.post(
   "/savePhoto",
   upload.fields([{ name: "userId" }, { name: "image" }]),
-  profile.savePhoto
+  photo.savePhoto
 );
-router.post("/getPhoto", profile.getPhoto);
-router.post("/getPhotos", profile.getPhotos);
+router.post("/getPhoto", photo.getPhoto);
+router.post("/getPhotos", photo.getPhotos);
 router.post(
   "/changePhoto",
   upload.fields([{ name: "userId" }, { name: "image" }]),
-  profile.changePhoto
+  photo.changePhoto
 );
 
 // 랭킹 관련

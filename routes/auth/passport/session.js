@@ -1,6 +1,6 @@
 const passport = require("passport");
 const localLogin = require("./localLogin.js");
-const mysqlConnection = require("../modules/mysql.js");
+const mysqlConnection = require("../../modules/mysql.js");
 
 const connection = mysqlConnection.connection;
 
@@ -16,7 +16,7 @@ module.exports = () => {
     console.log("[DeserializeUser] ", authId); // serializeUser 메소드의 user.id 값이 id 변수로 전달
 
     connection.query(
-      "SELECT * FROM user_data WHERE id=?",
+      "SELECT * FROM KW_project_database.user_data WHERE id=?",
       [authId],
       function (err, results) {
         if (err) 

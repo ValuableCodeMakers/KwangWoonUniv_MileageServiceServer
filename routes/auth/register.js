@@ -11,7 +11,7 @@ exports.register = async (req, res) => {
 
   await hasher({ password: _password }, function (err, pass, salt, hash) {
     connection.query(
-      `insert into KW_project_database.user_data(id,password,user_salt) value(?,?,?)`,
+      `INSERT INTO KW_project_database.user_data(id,password,user_salt) value(?,?,?)`,
       [_id,hash,salt],
 
       function (err, result, fields) {

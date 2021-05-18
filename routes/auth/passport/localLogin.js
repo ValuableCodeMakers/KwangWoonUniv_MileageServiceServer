@@ -1,7 +1,7 @@
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const bkfd2Password = require("pbkdf2-password");
-const mysqlConnection = require("../modules/mysql.js");
+const mysqlConnection = require("../../modules/mysql.js");
 
 const connection = mysqlConnection.connection;
 
@@ -30,7 +30,7 @@ module.exports = () =>
                   message: "회원정보(아이디)가 없습니다.",
                 });
               }
-
+              console.log(results)
               let user = results[0];
               return hasher(
                 { password: password, salt: user.user_salt },
@@ -38,7 +38,6 @@ module.exports = () =>
                   if (hash === user.password) {
                     // 사용자의 비밀번호가 올바른지 확인
                     let userWalletAddress;
-
                     connection.query(
                       `SELECT address FROM KW_project_database.user_wallet WHERE id = ?`,
                       user.id,
@@ -70,7 +69,7 @@ module.exports = () =>
             }
           );
         } catch (err) {
-          console.error(err);
+          console.log(err);
           done(err);
         }
       }

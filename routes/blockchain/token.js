@@ -2,12 +2,12 @@ const BigNumber = require("bignumber.js");
 const contractAbi = require("../../src/contractAbi.js"); // abi 불러오기
 const Web3 = require("web3");
 const mysqlConnection = require("../modules/mysql.js");
-require("dotenv").config(); // .env 사용
+const env_keys = require("../modules/env_keys.js");
 
-const infuraKey = process.env.INFURA_API_KEY; // infura Api 키
-const contractAddress = process.env.CONTRACT_ADDRESS; // Contract 주소, Token 주소
-const contractOwnerAddress = process.env.CONTRACT_OWNER_ADDRESS; // Contract 생성자 주소
-const contractPrivateKey = process.env.CONTRACT_PRIVATE_KEY; // Contract Private Key
+const infuraKey = env_keys.INFURA_API_KEY; // infura Api 키
+const contractAddress = env_keys.CONTRACT_ADDRESS; // Contract 주소, Token 주소
+const contractOwnerAddress = env_keys.CONTRACT_OWNER_ADDRESS; // Contract 생성자 주소
+const contractPrivateKey = env_keys.CONTRACT_PRIVATE_KEY; // Contract Private Key
 
 const connection = mysqlConnection.connection;
 
@@ -160,7 +160,7 @@ exports.transferToken = async (req, res) => {
         .call()
         .then((result) => {
           connection.query(
-            `select privateKey from KW_project_database.user_wallet where id = ?`,
+            `SELECT privateKey FROM KW_project_database.user_wallet where id = ?`,
             req.body.id,
             function (err, results) {
               console.log(results);

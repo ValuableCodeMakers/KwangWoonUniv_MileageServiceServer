@@ -3,22 +3,19 @@ const passport = require("passport");
 exports.login = async function (req, res, next) {
   await passport.authenticate("local", (err, userInfo, info) => {
     console.log("authenticate callback");
-
     let user = userInfo.user;
-
     if (err) {
       console.log("authenticate callback Fail!");
       res.send({
         result: false,
       });
     }
-    if (!user){
-      console.log(info.message)
+    if (!user) {
+      console.log(info.message);
       res.send({
         result: false,
       });
     }
-
 
     if (user) {
       console.log("authenticate callback Success!");

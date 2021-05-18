@@ -1,9 +1,14 @@
 const mysql = require("mysql");
+const env_keys = require("../modules/env_keys.js");
+
+const AWS_HOST = env_keys.AWS_HOST;
+const AWS_POST = env_keys.AWS_POST;
+const AWS_USER = env_keys.AWS_USER;
+const AWS_PASSWORD = env_keys.AWS_PASSWORD;
 
 exports.connection = mysql.createConnection({
-  host: "kw-project-database.cvhj6cyryo94.ap-northeast-2.rds.amazonaws.com",
-  post: 3306,
-  user: "admin",
-  password: "kwprojectdatabase",
-  database: "KW_KW_project_databasebase",
+  host: AWS_HOST,
+  post: AWS_POST,
+  user: AWS_USER,
+  password: AWS_PASSWORD,
 });
