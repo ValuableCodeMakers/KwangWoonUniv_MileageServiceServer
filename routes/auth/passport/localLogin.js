@@ -30,7 +30,6 @@ module.exports = () =>
                   message: "회원정보(아이디)가 없습니다.",
                 });
               }
-              console.log(results)
               let user = results[0];
               return hasher(
                 { password: password, salt: user.user_salt },

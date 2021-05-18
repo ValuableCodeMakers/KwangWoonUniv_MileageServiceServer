@@ -27,6 +27,7 @@ exports.getTokenBalance = async (req, res) => {
 
 // 이벤트 발생시 토큰 전송
 exports.getEventToken = async (req, res) => {
+  console.log("이벤트 토큰 전송 라우터")
   const to = req.body.to;
 
   let fromPrivateKey = contractPrivateKey;
@@ -54,7 +55,7 @@ exports.getEventToken = async (req, res) => {
         .then(function (result) {
           try {
             var decimals = result; // 18
-            let amount = parseFloat(100) * Math.pow(10, decimals); // 이벤트 토큰 100개
+            let amount = parseFloat(300) * Math.pow(10, decimals); // 이벤트 토큰 300개
 
             // 현재 가스비 계산
             web3.eth.getGasPrice(function (error, result) {
