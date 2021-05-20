@@ -220,7 +220,6 @@ exports.getBuildingVisitCount = async (req, res) => {
         if (err) {
           res.send(err);
         } else {
-          console.log("length: " + length);
           res.send({ length: length });
         }
       }

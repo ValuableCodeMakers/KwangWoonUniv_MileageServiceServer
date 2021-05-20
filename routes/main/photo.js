@@ -54,7 +54,7 @@ exports.changePhoto = async (req, res) => {
             );
           });
         }
-
+        
         // DB에 사진 정보 덮어쓰기
         connection.query(
           `INSERT INTO KW_project_database.user_photo SET id=?,type=?,filename=?,path=? ON DUPLICATE KEY UPDATE type=?,filename=?,path=?`,
